@@ -16,6 +16,6 @@ class JSONDataManager(DataManagerInterface):
         return user_movies
 
 
-movies_data = JSONDataManager('C:/Users/inesf/PycharmProjects/movie_web_app/movie_web_app/data/data.json')
+#movies_data = JSONDataManager('C:/Users/inesf/PycharmProjects/movie_web_app/movie_web_app/data/data.json')
 #print(movies_data.get_all_users())
-print(movies_data.get_user_movies(1))
+#print(movies_data.get_user_movies(1))
