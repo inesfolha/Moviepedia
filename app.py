@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, render_template
 from data_manager.json_data_manager import JSONDataManager
 
 app = Flask(__name__)
@@ -13,13 +13,15 @@ def home():
 @app.route('/users')
 def list_users():
     users = data_manager.get_all_users()
-    return str(users)  # Temporarily returning users as a string
+    return render_template('users.html', users=users)
+
+    # NEXT
 
 
-@app.route('/users/<user_id>')  # UPDATE THIS
+@app.route('/users/<user_id>')  # BUILDING THE OTHER ROUTES + OMDB API INTERFACE
 def user_movies():
     # user = data_manager.get_user_movies()
-    return "his route will exhibit a specific user’s list of favorite movies. " \
+    return "This route will exhibit a specific user’s list of favorite movies. " \
            "We will use the <user_id> in the route to fetch the appropriate user’s movies."
 
 

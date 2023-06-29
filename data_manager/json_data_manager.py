@@ -9,7 +9,8 @@ class JSONDataManager(DataManagerInterface):
         self.data = load_json_data(filename)
 
     def get_all_users(self):
-        return self.data
+        users = [user['name'] for user in self.data]
+        return users
 
     def get_user_movies(self, user_id):
         user_movies = [user.get('movies') for user in self.data if user['id'] == user_id]
