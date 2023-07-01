@@ -11,5 +11,7 @@
      <li><a href="/users/{{ user[1] }}">{{ user[0] }}</a> </li>
 {% endfor %}
 </ul>
+<a href="{{ url_for('add_user') }}">
+    <button>New User </button>
 </body>
 </html>

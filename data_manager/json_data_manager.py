@@ -20,6 +20,10 @@ class JSONDataManager(DataManagerInterface):
         user_movies = [user.get('movies') for user in self.data if user['id'] == user_id]
         return user_name, user_movies
 
+    def add_user(self, user_name, user_id, user_movie_list):
+        new_user = {'id': user_id, 'name': user_name, 'movies': user_movie_list}
+        self.data.append(new_user)
+
     def add_movie(self, user_id, movie_id, title, rating, year, poster, director, movie_link):
         for user in self.data:
             if user['id'] == user_id:
