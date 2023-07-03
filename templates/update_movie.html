@@ -1,10 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+    <meta charset="UTF-8">
+    <title>Update Movie</title>
 </head>
 <body>
-$END$
+ <h1>Update Movie</h1>
+        <form method="POST">
+
+        <label for="title">Title:</label>
+        <input type="text" name="title" value="{{ movie['title'] }}" required><br>
+
+        <label for="year">Year:</label>
+        <input type="number" name="year" value="{{ movie['year'] }}" required><br>
+
+        <label for="director"> Director:</label>
+        <input type="text" name="director" value="{{ movie['director'] }}" required><br>
+
+        <label for="rating"> Rating:</label>
+        <input type="text" name="rating" value="{{ movie['rating'] }}" required><br>
+
+        <label for="poster"> Poster:</label>
+        <input type="text" name="poster" value="{{ movie['poster'] }}" required><br>
+
+        <label for="imdb_link"> Imdb link:</label>
+        <input type="text" name="imdb_link" value="{{ movie['movie_link'] }}" required><br>
+
+        <input type="submit" value="Update">
+    </form>
+
 </body>
 </html>
+

@@ -38,15 +38,41 @@ class JSONDataManager(DataManagerInterface):
 
         save_json_file(self.filename, self.data)
 
+    def update_movie(self, user_id, movie_id, title, rating, year, poster, director, movie_link):
+        movie_to_update = None
+        for user in self.data:
+            if user['id'] == user_id:
+                user_movies = user['movies']
+                for movie in user_movies:
+                    if movie['id'] == movie_id:
+                        movie_to_update = movie
+                        break
+
+        if movie_to_update:
+            movie_to_update['title'] = title
+            movie_to_update['rating'] = rating
+            movie_to_update['year'] = year
+            movie_to_update['poster'] = poster
+            movie_to_update['director'] = director
+            movie_to_update['movie_link'] = movie_link
+            save_json_file(self.filename, self.data)
+            return movie_to_update
+        else:
+            return "Movie not found"
 
 
 
 
 
 
-movies_data = JSONDataManager('C:/Users/inesf/PycharmProjects/movies_app_proj/movie_web_app/data/data.json')
-print(movies_data)
+
+
+
+#movies_data = JSONDataManager('C:/Users/inesf/PycharmProjects/movies_app_proj/movie_web_app/data/data.json')
+#print(movies_data)
 #print(movies_data.get_all_users())
 #print(movies_data.get_user_movies('dfsxfs'))
 #print(movies_data.get_user_movies(1))
 #movies_data.add_movie('deadee','movie_id', 'title', 'rating', 'year', 'poster', 'director', 'movie_link')
+#print(movies_data.update_movie("07bc496f-27e5-49a9-8f61-a460039da3ad", "ef053db5-d510-49b0-bd3b-7d2a6d217ecd",  "Inception", 8.8, 2010, "https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_SX300.jpg", "Christopher Nolan", "https://www.imdb.com/title/tt1375666/"))
+#print(movies_data)

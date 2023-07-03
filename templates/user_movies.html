@@ -9,8 +9,8 @@
     <ul>
         {% for movie in movies[0] %}
              <li>{{ movie['title'] }} - {{ movie['director'] }} ({{ movie['year'] }})
-                <a href="/edit/{{ movie['id'] }}">Edit</a>
-                <a href="/delete/{{ movie['id'] }}">Delete</a>
+                 <a href="{{ url_for('update_movie', user_id=user_id, movie_id=movie['id']) }}"> Edit </a>
+                 <a href="/delete/{{ movie['id'] }}">Delete</a>
              </li>
         {% endfor %}
     </ul>

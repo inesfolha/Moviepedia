@@ -68,9 +68,29 @@ def add_movie(user_id):
     return render_template('add_movie.html')
 
 
-@app.route('/users/<user_id>/update_movie/<movie_id>)')
-def update_movie():
-    return "This route will display a form allowing for the updating of details of a specific movie in a user’s list."
+@app.route('/users/<user_id>/update_movie/<movie_id>', methods=['GET', 'POST'])
+def update_movie(user_id, movie_id):
+    user_movie_list = data_manager.get_user_movies(user_id)[1]
+
+    movie_to_update = None
+    for movie in user_movie_list[0]:
+        if movie['id'] == movie_id:
+            movie_to_update = movie
+
+    if request.method == 'POST':
+        updated_title = request.form['title']
+        updated_director = request.form['director']
+        updated_year = request.form['year']
+        updated_rating = request.form['rating']
+        updated_poster_link = request.form['poster']
+        updated_imdb_link = request.form['imdb_link']
+
+        data_manager.update_movie(user_id, movie_id, updated_title, updated_rating,
+                                  updated_year, updated_poster_link, updated_director, updated_imdb_link)
+
+        return redirect(url_for('user_movies', user_id=user_id))
+
+    return render_template('update_movie.html', movie_id=movie_id, user_id=user_id, movie=movie_to_update)
 
 
 @app.route('/users/<user_id>/delete_movie/<movie_id>')
