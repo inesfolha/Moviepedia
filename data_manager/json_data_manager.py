@@ -40,13 +40,11 @@ class JSONDataManager(DataManagerInterface):
 
     def update_movie(self, user_id, movie_id, title, rating, year, poster, director, movie_link):
         movie_to_update = None
-        for user in self.data:
-            if user['id'] == user_id:
-                user_movies = user['movies']
-                for movie in user_movies:
-                    if movie['id'] == movie_id:
-                        movie_to_update = movie
-                        break
+        user_movies = self.get_user_movies(user_id)[1]
+        for movie in user_movies:
+            if movie['id'] == movie_id:
+                movie_to_update = movie
+                break
 
         if movie_to_update:
             movie_to_update['title'] = title
@@ -59,6 +57,22 @@ class JSONDataManager(DataManagerInterface):
             return movie_to_update
         else:
             return "Movie not found"
+
+    def delete_movie(self, user_id, movie_id):
+        movie_to_delete = None
+        user_movies = self.get_user_movies(user_id)[1][0]
+
+        for movie in user_movies:
+            if movie['id'] == movie_id:
+                movie_to_delete = movie
+                break
+
+        if movie_to_delete:
+            user_movies.remove(movie_to_delete)
+            save_json_file(self.filename, self.data)
+        else:
+            return "Movie not found"
+
 
 
 

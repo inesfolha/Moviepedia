@@ -24,3 +24,6 @@ class DataManagerInterface(ABC):
 
     def update_movie(self, user_id, movie_id, title, rating, year, poster, director, movie_link):
         pass
+
+    def delete_movie(self, user_id, movie_id):
+        pass

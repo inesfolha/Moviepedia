@@ -8,9 +8,14 @@
 <h1> {{ user_name[0] }} Movies </h1>
     <ul>
         {% for movie in movies[0] %}
-             <li>{{ movie['title'] }} - {{ movie['director'] }} ({{ movie['year'] }})
-                 <a href="{{ url_for('update_movie', user_id=user_id, movie_id=movie['id']) }}"> Edit </a>
-                 <a href="/delete/{{ movie['id'] }}">Delete</a>
+             <li> {{ movie['title'] }} - {{ movie['director'] }} ({{ movie['year'] }})
+
+                 <a href="{{ url_for('update_movie', user_id=user_id, movie_id=movie['id'])}}">
+                    <button type="button" class="update-button"> Edit </button></a>
+
+                 <form action="{{ url_for('delete_movie', user_id=user_id, movie_id=movie['id']) }}" method="post">
+                    <input type="hidden" name="_method" value="delete">
+                        <button type="submit" class="delete-link">Delete</button></form>
              </li>
         {% endfor %}
     </ul>

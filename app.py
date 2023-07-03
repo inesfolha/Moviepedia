@@ -93,9 +93,11 @@ def update_movie(user_id, movie_id):
     return render_template('update_movie.html', movie_id=movie_id, user_id=user_id, movie=movie_to_update)
 
 
-@app.route('/users/<user_id>/delete_movie/<movie_id>')
-def delete_movie():
-    return "Upon visiting this route, a specific movie will be removed from a user’s favorite movie list."
+@app.route('/users/<user_id>/delete_movie/<movie_id>', methods=['GET', 'POST'])
+def delete_movie(user_id, movie_id):
+    if request.method == 'POST':
+        data_manager.delete_movie(user_id, movie_id)
+        return redirect(url_for('user_movies', user_id=user_id, movie_id=movie_id))
 
 
 if __name__ == '__main__':
