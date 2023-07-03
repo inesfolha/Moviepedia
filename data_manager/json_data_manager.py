@@ -15,10 +15,13 @@ class JSONDataManager(DataManagerInterface):
         users = [(user['name'], user['id']) for user in self.data]
         return users
 
+    def get_user_name(self, user_id):
+        user_name = next((user.get('name') for user in self.data if user['id'] == user_id), None)
+        return user_name
+
     def get_user_movies(self, user_id):
-        user_name = [user.get('name') for user in self.data if user['id'] == user_id]
-        user_movies = [user.get('movies') for user in self.data if user['id'] == user_id]
-        return user_name, user_movies
+        user_movies = next((user.get('movies') for user in self.data if user['id'] == user_id), None)
+        return user_movies
 
     def add_user(self, user_name, user_id, user_movie_list):
         new_user = {'id': user_id, 'name': user_name, 'movies': user_movie_list}
@@ -40,7 +43,7 @@ class JSONDataManager(DataManagerInterface):
 
     def update_movie(self, user_id, movie_id, title, rating, year, poster, director, movie_link):
         movie_to_update = None
-        user_movies = self.get_user_movies(user_id)[1]
+        user_movies = self.get_user_movies(user_id)
         for movie in user_movies:
             if movie['id'] == movie_id:
                 movie_to_update = movie
@@ -60,7 +63,7 @@ class JSONDataManager(DataManagerInterface):
 
     def delete_movie(self, user_id, movie_id):
         movie_to_delete = None
-        user_movies = self.get_user_movies(user_id)[1][0]
+        user_movies = self.get_user_movies(user_id)
 
         for movie in user_movies:
             if movie['id'] == movie_id:

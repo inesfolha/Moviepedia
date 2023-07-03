@@ -25,8 +25,8 @@ def list_users():
 
 @app.route('/users/<user_id>')
 def user_movies(user_id):
-    user_name = data_manager.get_user_movies(user_id)[0]
-    movies = data_manager.get_user_movies(user_id)[1]
+    user_name = data_manager.get_user_name(user_id)
+    movies = data_manager.get_user_movies(user_id)
     return render_template('user_movies.html', movies=movies, user_name=user_name, user_id=user_id)
 
 
@@ -70,10 +70,10 @@ def add_movie(user_id):
 
 @app.route('/users/<user_id>/update_movie/<movie_id>', methods=['GET', 'POST'])
 def update_movie(user_id, movie_id):
-    user_movie_list = data_manager.get_user_movies(user_id)[1]
+    user_movie_list = data_manager.get_user_movies(user_id)
 
     movie_to_update = None
-    for movie in user_movie_list[0]:
+    for movie in user_movie_list:
         if movie['id'] == movie_id:
             movie_to_update = movie
 
