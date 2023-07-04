@@ -1,0 +1,44 @@
+.add-movie-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 300px;
+  width: 700px;
+  margin: 0 auto;
+
+}
+
+.enter-movie-box {
+  background-color: #1f1f2e;
+  padding: 30px;
+  border-radius: 7px;
+}
+
+.enter-movie-box label {
+  color: white;
+  font-size: 20px;
+}
+
+.enter-movie-box input[type="text"] {
+  padding: 5px;
+  font-size: 16px;
+  border-radius: 5px;
+}
+
+.enter-movie-box button[type="submit"] {
+  background-color: #1f1f2e;
+  opacity: 0.85;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  font-size: 30px;
+  font-family: "Lucida Console", "Courier New", monospace;
+  font-size: 20px;
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+.enter-movie-box button[type="submit"]:hover {
+  background-color: #9494b8;
+}

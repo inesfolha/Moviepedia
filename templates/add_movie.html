@@ -3,14 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <title>Add Movie</title>
+     <link rel="stylesheet" href="/static/general-style.css">
+    <link rel="stylesheet" href="/static/add-movie-style.css">
 </head>
 <body>
-<body>
-    <h1>Add Movie</h1>
-    <form method="POST">
-        <label for="movie">Enter Movie:</label>
-        <input type="text" name="movie" id="movie" required>
-        <br><br>
-        <input type="submit" value="Add">
+
+    <div class="title">
+        <h1>Add Movie</h1>
+    </div>
+
+    <div class="add-movie-box">
+        <div class="enter-movie-box">
+            <form method="POST">
+                <label for="movie">Enter Movie:</label>
+                <input type="text" name="movie" id="movie" required> <button type="submit">Add</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="button-container">
+        <a href="{{ url_for('user_movies', user_id=user_id) }}">
+            <button class="bottom-right-button">Back to my Movies</button>
+        </a>
+
+        <a href="{{ url_for('home') }}">
+            <button class="bottom-right-button">Back to Homepage</button>
+        </a>
+
+        <a href="{{ url_for('list_users') }}">
+            <button class="bottom-right-button">Back to all users</button>
+        </a>
+    </div>
 </body>
 </html>

@@ -3,31 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <title>Update Movie</title>
+    <link rel="stylesheet" href="/static/general-style.css">
+    <link rel="stylesheet" href="/static/update-movie-style.css">
 </head>
 <body>
- <h1>Update Movie</h1>
+<div class="title">
+     <h1>Update Movie</h1>
+</div>
+
+<div class="update-movie">
         <form method="POST">
 
+<div class="update-parameter">
         <label for="title">Title:</label>
         <input type="text" name="title" value="{{ movie['title'] }}" required><br>
+</div>
 
+<div class="update-parameter">
         <label for="year">Year:</label>
         <input type="number" name="year" value="{{ movie['year'] }}" required><br>
+</div>
 
+<div class="update-parameter">
         <label for="director"> Director:</label>
         <input type="text" name="director" value="{{ movie['director'] }}" required><br>
+</div>
 
+<div class="update-parameter">
         <label for="rating"> Rating:</label>
         <input type="text" name="rating" value="{{ movie['rating'] }}" required><br>
+</div>
 
+<div class="update-parameter">
         <label for="poster"> Poster:</label>
         <input type="text" name="poster" value="{{ movie['poster'] }}" required><br>
+</div>
 
+<div class="update-parameter">
         <label for="imdb_link"> Imdb link:</label>
         <input type="text" name="imdb_link" value="{{ movie['movie_link'] }}" required><br>
+</div>
 
         <input type="submit" value="Update">
     </form>
+</div>
 
 </body>
 </html>

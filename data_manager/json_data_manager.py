@@ -1,4 +1,3 @@
-import json
 from movie_web_app.data_manager.data_manager_interface import DataManagerInterface
 from movie_web_app.data_manager.file_handler import load_json_data, save_json_file
 
@@ -76,20 +75,11 @@ class JSONDataManager(DataManagerInterface):
         else:
             return "Movie not found"
 
-
-
-
-
-
-
-
-
-
-#movies_data = JSONDataManager('C:/Users/inesf/PycharmProjects/movies_app_proj/movie_web_app/data/data.json')
-#print(movies_data)
-#print(movies_data.get_all_users())
-#print(movies_data.get_user_movies('dfsxfs'))
-#print(movies_data.get_user_movies(1))
-#movies_data.add_movie('deadee','movie_id', 'title', 'rating', 'year', 'poster', 'director', 'movie_link')
-#print(movies_data.update_movie("07bc496f-27e5-49a9-8f61-a460039da3ad", "ef053db5-d510-49b0-bd3b-7d2a6d217ecd",  "Inception", 8.8, 2010, "https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_SX300.jpg", "Christopher Nolan", "https://www.imdb.com/title/tt1375666/"))
-#print(movies_data)
+# movies_data = JSONDataManager('C:/Users/inesf/PycharmProjects/movies_app_proj/movie_web_app/data/data.json')
+# print(movies_data)
+# print(movies_data.get_all_users())
+# print(movies_data.get_user_movies('dfsxfs'))
+# print(movies_data.get_user_movies(1))
+# movies_data.add_movie('deadee','movie_id', 'title', 'rating', 'year', 'poster', 'director', 'movie_link')
+# print(movies_data.update_movie("07bc496f-27e5-49a9-8f61-a460039da3ad", "ef053db5-d510-49b0-bd3b-7d2a6d217ecd",  "Inception", 8.8, 2010, "https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_SX300.jpg", "Christopher Nolan", "https://www.imdb.com/title/tt1375666/"))
+# print(movies_data)

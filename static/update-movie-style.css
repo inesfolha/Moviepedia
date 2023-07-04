@@ -1,0 +1,54 @@
+
+.update-movie {
+  width: 700px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.update-parameter {
+  text-align: left;
+  margin-bottom: 10px;
+}
+
+.update-parameter label {
+  display: inline-block;
+  width: 180px;
+  text-align: right;
+  margin-right: 10px;
+  font-size: 16px;
+}
+
+.update-parameter input {
+  width: 400px;
+  height: 30px;
+}
+
+input[type="submit"] {
+  display: block;
+  margin: 0 auto;
+  margin-top: 10px;
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #1f1f2e;
+  opacity: 0.85;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 530px
+  }
+
+input[type="submit"]:hover {
+  background-color: #9494b8;
+}
+
+.button-container {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  z-index: 999;
+
+}

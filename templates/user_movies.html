@@ -2,24 +2,51 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title> User Movies </title>
+    <title>User Movies</title>
+    <link rel="stylesheet" href="/static/movies-grid-style.css">
 </head>
 <body>
-<h1> {{ user_name}} Movies </h1>
-    <ul>
-        {% for movie in movies%}
-             <li> {{ movie['title'] }} - {{ movie['director'] }} ({{ movie['year'] }})
-                 <a href="{{ url_for('update_movie', user_id=user_id, movie_id=movie['id'])}}">
-                    <button type="button" class="update-button"> Edit</button></a>
+    <div class="list-movies-title">
+        <h1>{{ user_name }}'s Moviepedia</h1>
+    </div>
 
-                 <form action="{{ url_for('delete_movie', user_id=user_id, movie_id=movie['id']) }}" method="post">
-                    <input type="hidden" name="_method" value="delete">
-                        <button type="submit" class="delete-link">Delete</button></form>
-             </li>
+<div>
+    <ol class="movie-grid">
+        {% for movie in movies %}
+        <li>
+            <div class="movie">
+                <div class="movie-buttons">
+                    <a href="{{ url_for('update_movie', user_id=user_id, movie_id=movie['id']) }}">
+                        <button type="button" class="update-button">Edit</button>
+                    </a>
+                    <form action="{{ url_for('delete_movie', user_id=user_id, movie_id=movie['id']) }}" method="post">
+                        <input type="hidden" name="_method" value="delete">
+                        <button type="submit" class="delete-link"> X </button>
+                    </form>
+                </div>
+                <a href={{ movie['movie_link'] }}>
+                    <div class="movie-rating">{{ movie['rating'] }}</div>
+                    <img class="movie-poster" src={{movie['poster']}}/>
+                </a>
+                <div class="movie-title">{{ movie['title'] }} - {{ movie['year'] }}</div>
+
+            </div>
+        </li>
         {% endfor %}
-    </ul>
+    </ol>
+</div>
+
+<div class="button-container">
     <a href="{{ url_for('add_movie', user_id=user_id) }}">
-    <button>Add Movie</button>
-</a>
+        <button class="bottom-right-button">Add Movie</button>
+    </a>
+    <a href="{{ url_for('home') }}">
+        <button class="top-right-button">Back to Homepage</button>
+    </a>
+    <a href="{{ url_for('list_users') }}">
+        <button class="bottom-right-button">Back to all users</button>
+    </a>
+</div>
+
 </body>
 </html>

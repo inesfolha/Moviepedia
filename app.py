@@ -14,7 +14,7 @@ def id_generator():
 
 @app.route('/')
 def home():
-    return "Welcome to MovieWeb App!"
+    return render_template('homepage.html')
 
 
 @app.route('/users')
@@ -98,6 +98,11 @@ def delete_movie(user_id, movie_id):
     if request.method == 'POST':
         data_manager.delete_movie(user_id, movie_id)
         return redirect(url_for('user_movies', user_id=user_id, movie_id=movie_id))
+
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
 
 
 if __name__ == '__main__':
