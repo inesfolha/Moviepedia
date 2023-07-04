@@ -1,0 +1,54 @@
+
+.users-list {
+  margin-top: 0px;
+  padding: 0 0px;
+  text-align: center;
+
+}
+
+.users-list ul {
+  list-style: none;
+  padding: 15px 15px;
+  background:  #1f1f2e;
+  color: white;
+  text-align: center;
+  font-size: 16pt;
+  border-radius: 7px;
+  margin-bottom: 10px;
+}
+
+.users-list li {
+  margin-bottom: 10px;
+}
+
+.users-list li a {
+  color: #c2c2d6;
+  text-decoration: none;
+
+}
+
+.users-list li a:hover {
+  color: white;
+}
+
+.buttons-container button {
+
+  opacity: 0.85;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  font-family: "Lucida Console", "Courier New", monospace;
+  margin-right: 10px;
+  cursor: pointer;
+
+}
+.buttons-bar {
+   padding: 0px 0;
+  background:  #1f1f2e;
+  color: white;
+  text-align: center;
+  border-radius: 7px;
+  margin-bottom: 10px;
+}
