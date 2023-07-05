@@ -90,8 +90,8 @@ def update_movie(user_id, movie_id):
 
     if movie_to_update is None:
         # Handle possible errors with the movie id
-        error_message = "Sorry, we could not find the movie!"
-        return render_template('error.html', error_message=error_message)
+        error_message = "Sorry, we could not find that movie!"
+        return render_template('general_error.html', error_message=error_message)
 
     if request.method == 'POST':
         updated_title = request.form['title']
@@ -112,12 +112,20 @@ def update_movie(user_id, movie_id):
 @app.route('/users/<user_id>/delete_movie/<movie_id>', methods=['GET', 'POST'])
 def delete_movie(user_id, movie_id):
     if request.method == 'POST':
-        data_manager.delete_movie(user_id, movie_id)
-        return redirect(url_for('user_movies', user_id=user_id, movie_id=movie_id))
+        try:
+            data_manager.delete_movie(user_id, movie_id)
+            return redirect(url_for('user_movies', user_id=user_id, movie_id=movie_id))
+        except (ValueError, TypeError):
+            # Handle possible errors with the movie id
+            error_message = "Sorry, we could not find that movie!"
+            return render_template('general_error.html', error_message=error_message)
+
+    error_message = "Sorry, this page does not support GET requests"
+    return render_template('general_error.html', error_message=error_message)
 
 
 @app.errorhandler(404)
-def page_not_found(e):
+def page_not_found():
     return render_template('404.html'), 404
 
 
