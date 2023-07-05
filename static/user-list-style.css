@@ -52,3 +52,17 @@
   border-radius: 7px;
   margin-bottom: 10px;
 }
+.delete-button {
+  background-color: #e57373;
+  color: white;
+  padding: 2px 4px;
+  border: none;
+  border-radius: 30%;
+  font-size: 7px;
+  cursor: pointer;
+  text-align: right;
+}
+
+.delete-button:hover {
+  background-color: #ff4444;
+}

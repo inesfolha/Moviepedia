@@ -4,32 +4,56 @@ from movie_web_app.data_manager.file_handler import load_json_data, save_json_fi
 
 class JSONDataManager(DataManagerInterface):
     def __init__(self, filename):
+        """Initializes the JSONDataManager object with the specified data file."""
+
         self.filename = filename
         self.data = load_json_data(filename)
 
     def __str__(self):
+        """Returns a string representation of the JSONDataManager object."""
         return f'{self.data}'
 
     def get_all_users(self):
-        users = [(user['name'], user['id']) for user in self.data]
-        return users
+        """Retrieves a list of all users in the data."""
+        try:
+            users = [(user['name'], user['id']) for user in self.data]
+            return users
+
+        except Exception as e:
+            raise RuntimeError("An error occurred while retrieving user data.") from e
 
     def get_user_name(self, user_id):
-        user_name = next((user.get('name') for user in self.data if user['id'] == user_id), None)
-        return user_name
+        """Retrieves the name of a user based on the provided user ID."""
+        try:
+            user_name = next((user.get('name') for user in self.data if user['id'] == user_id), None)
+            return user_name
+        except Exception as e:
+            raise RuntimeError("An error occurred while retrieving user data.") from e
 
     def get_user_movies(self, user_id):
-        user_movies = next((user.get('movies') for user in self.data if user['id'] == user_id), None)
-        return user_movies
+        """Retrieves the list of movies associated with the provided user ID."""
+        try:
+            user_movies = next((user.get('movies') for user in self.data if user['id'] == user_id), None)
+            return user_movies
+        except StopIteration:
+            return None
+        except Exception as e:
+            raise RuntimeError("An error occurred while retrieving user movies.") from e
 
     def add_user(self, user_name, user_id, user_movie_list):
-        new_user = {'id': user_id, 'name': user_name, 'movies': user_movie_list}
-        self.data.append(new_user)
+        """Adds a new user with the given name, ID, and movie list to the data."""
+        try:
+            new_user = {'id': user_id, 'name': user_name, 'movies': user_movie_list}
+            self.data.append(new_user)
+            save_json_file(self.filename, self.data)
+        except Exception as e:
+            raise RuntimeError("An error occurred while adding a new user.") from e
 
     def add_movie(self, user_id, movie_id, title, rating, year, poster, director, movie_link):
-        for user in self.data:
-            if user['id'] == user_id:
-
+        """Adds a new movie to the movie list of the user with the provided user ID."""
+        try:
+            user = next((user for user in self.data if user['id'] == user_id), None)
+            if user:
                 new_movie = {'id': movie_id, 'title': title, 'director': director, 'year': year,
                              'rating': rating, 'poster': poster, 'movie_link': movie_link}
 
@@ -38,42 +62,71 @@ class JSONDataManager(DataManagerInterface):
                 else:
                     user['movies'].append(new_movie)
 
-        save_json_file(self.filename, self.data)
+                save_json_file(self.filename, self.data)
+
+        except StopIteration:
+            raise ValueError(f"User with ID {user_id} not found.")
+        except Exception as e:
+            raise RuntimeError("An error occurred while adding a new movie.") from e
 
     def update_movie(self, user_id, movie_id, title, rating, year, poster, director, movie_link):
-        movie_to_update = None
-        user_movies = self.get_user_movies(user_id)
-        for movie in user_movies:
-            if movie['id'] == movie_id:
-                movie_to_update = movie
-                break
+        """Updates the details of a movie identified by the user ID and movie ID."""
+        try:
+            movie_to_update = None
+            user_movies = self.get_user_movies(user_id)
+            for movie in user_movies:
+                if movie['id'] == movie_id:
+                    movie_to_update = movie
+                    break
 
-        if movie_to_update:
-            movie_to_update['title'] = title
-            movie_to_update['rating'] = rating
-            movie_to_update['year'] = year
-            movie_to_update['poster'] = poster
-            movie_to_update['director'] = director
-            movie_to_update['movie_link'] = movie_link
-            save_json_file(self.filename, self.data)
-            return movie_to_update
-        else:
-            return "Movie not found"
+            if movie_to_update:
+                movie_to_update['title'] = title
+                movie_to_update['rating'] = rating
+                movie_to_update['year'] = year
+                movie_to_update['poster'] = poster
+                movie_to_update['director'] = director
+                movie_to_update['movie_link'] = movie_link
+                save_json_file(self.filename, self.data)
+                return movie_to_update
+            else:
+                raise ValueError(f"Movie with ID {movie_id} not found.")
+
+        except Exception as e:
+            raise RuntimeError("An error occurred while updating the movie.") from e
 
     def delete_movie(self, user_id, movie_id):
-        movie_to_delete = None
-        user_movies = self.get_user_movies(user_id)
+        """Deletes a movie with the specified movie ID from the user's movie list."""
 
-        for movie in user_movies:
-            if movie['id'] == movie_id:
-                movie_to_delete = movie
+        try:
+            movie_to_delete = None
+            user_movies = self.get_user_movies(user_id)
+
+            for movie in user_movies:
+                if movie['id'] == movie_id:
+                    movie_to_delete = movie
+                    break
+
+            if movie_to_delete:
+                user_movies.remove(movie_to_delete)
+                save_json_file(self.filename, self.data)
+            else:
+                raise ValueError(f"Movie with ID {movie_id} not found.")
+        except Exception as e:
+            raise RuntimeError("An error occurred while deleting the movie.") from e
+
+    def delete_user(self, user_id):
+        """Delete a user with the provided user ID from the data."""
+        user_to_delete = None
+        for user in self.data:
+            if user['id'] == user_id:
+                user_to_delete = user
                 break
 
-        if movie_to_delete:
-            user_movies.remove(movie_to_delete)
+        if user_to_delete:
+            self.data.remove(user_to_delete)
             save_json_file(self.filename, self.data)
         else:
-            return "Movie not found"
+            raise ValueError(f"User with ID {user_id} not found.")
 
 # movies_data = JSONDataManager('C:/Users/inesf/PycharmProjects/movies_app_proj/movie_web_app/data/data.json')
 # print(movies_data)

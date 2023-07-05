@@ -156,6 +156,25 @@ def delete_movie(user_id, movie_id):
     return render_template('general_error.html', error_message=error_message)
 
 
+@app.route('/users/<user_id>/delete_user', methods=['GET', 'POST'])
+def delete_user(user_id):
+    """Deletes a user """
+    if request.method == 'POST':
+        try:
+            data_manager.delete_user(user_id)
+            return redirect(url_for('list_users'))
+
+        except ValueError as e:
+            error_message = str(e)
+            return render_template('general_error.html', error_message=error_message)
+        except RuntimeError as e:
+            error_message = str(e)
+            return render_template('general_error.html', error_message=error_message)
+
+    error_message = "Sorry, this page does not support GET requests"
+    return render_template('general_error.html', error_message=error_message)
+
+
 @app.errorhandler(404)
 def page_not_found():
     """Renders the 404 page."""
