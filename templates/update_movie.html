@@ -48,6 +48,22 @@
     </form>
 </div>
 
+    <div class="button-container">
+        <a href="{{ url_for('user_movies', user_id=user_id) }}">
+            <button class="bottom-right-button"> Back to my Movies</button>
+        </a>
+
+        <a href="{{ url_for('home') }}">
+            <button class="bottom-right-button"> Back to Homepage</button>
+        </a>
+
+        <a href="{{ url_for('list_users') }}">
+            <button class="bottom-right-button"> Back to all users</button>
+        </a>
+    </div>
+
+
 </body>
 </html>
+
 

@@ -49,23 +49,33 @@ def add_movie(user_id):
         movie_info = data_extractor(movie)
         movie_link = get_imdb_link(movie)
 
-        if movie_info is not None:
-            title = movie_info["Title"]
+        if movie_info is not None and 'Title' in movie_info and 'Year' in movie_info and 'Director' in movie_info:
+            title = movie_info.get("Title")
             if len(movie_info['Ratings']) > 0:
                 rating = float(movie_info['Ratings'][0]['Value'].split("/")[0])
             else:
                 rating = None
 
-            year = int(movie_info['Year'])
-            poster = movie_info['Poster']
-            director = movie_info['Director']
+            year_str = movie_info.get('Year')
+            if year_str.isdigit():
+                year = int(year_str)
+            else:
+                error_message = "Failed to retrieve movie information. Please try a different movie"
+                return render_template('general_error.html', error_message=error_message)
+
+            poster = movie_info.get('Poster')
+            director = movie_info.get('Director')
             movie_id = id_generator()
 
             data_manager.add_movie(user_id, movie_id, title, rating, year, poster, director, movie_link)
 
             return redirect(url_for('user_movies', user_id=user_id))
 
-    return render_template('add_movie.html')
+        else:
+            error_message = "Failed to retrieve movie information. Please make sure the movie exists."
+            return render_template('general_error.html', error_message=error_message)
+
+    return render_template('add_movie.html', user_id=user_id)
 
 
 @app.route('/users/<user_id>/update_movie/<movie_id>', methods=['GET', 'POST'])
@@ -76,6 +86,12 @@ def update_movie(user_id, movie_id):
     for movie in user_movie_list:
         if movie['id'] == movie_id:
             movie_to_update = movie
+            break
+
+    if movie_to_update is None:
+        # Handle possible errors with the movie id
+        error_message = "Sorry, we could not find the movie!"
+        return render_template('error.html', error_message=error_message)
 
     if request.method == 'POST':
         updated_title = request.form['title']

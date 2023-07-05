@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Error</title>
+    <link rel="stylesheet" href="/static/general-style.css">
+</head>
+<body>
+<div class="title">
+    <h1> Error </h1>
+</div>
+
+<p> {{error_message}} </p>
+
+<div class="buttons-container">
+   <a href="{{ url_for('home') }}">
+        <button class="top-right-button">Back to Homepage</button>
+    </a>
+</div>
+</body>
+</html>

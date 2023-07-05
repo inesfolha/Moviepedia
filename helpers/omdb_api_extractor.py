@@ -28,7 +28,7 @@ def get_imdb_link(title):
     data = json.loads(response.text)
 
     # Extract the IMDb link
-    imdb_id = data['imdbID']
+    imdb_id = data.get('imdbID')
     imdb_link = f'https://www.imdb.com/title/{imdb_id}/'
 
     return imdb_link

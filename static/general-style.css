@@ -66,4 +66,7 @@ body {
   align-items: flex-end;
   z-index: 999;
 }
-
+ p {
+    text-align: center;
+    font-size: 18px;
+ }
