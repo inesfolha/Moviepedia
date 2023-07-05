@@ -14,35 +14,57 @@ def id_generator():
 
 @app.route('/')
 def home():
+    """Renders the homepage template."""
     return render_template('homepage.html')
 
 
 @app.route('/users')
 def list_users():
-    users = data_manager.get_all_users()
-    return render_template('users.html', users=users)
+    """Retrieves all users and renders the users template."""
+    try:
+        users = data_manager.get_all_users()
+        return render_template('users.html', users=users)
+    except Exception as e:
+        error_message = "An error occurred while retrieving user data."
+        print(f"Error: {str(e)}")
+        return render_template('general_error.html', error_message=error_message)
 
 
 @app.route('/users/<user_id>')
 def user_movies(user_id):
-    user_name = data_manager.get_user_name(user_id)
-    movies = data_manager.get_user_movies(user_id)
-    return render_template('user_movies.html', movies=movies, user_name=user_name, user_id=user_id)
+    """Retrieves a specific user's movies and renders the user_movies template."""
+
+    try:
+        user_name = data_manager.get_user_name(user_id)
+        movies = data_manager.get_user_movies(user_id)
+        return render_template('user_movies.html', movies=movies, user_name=user_name, user_id=user_id)
+    except Exception as e:
+        error_message = "An error occurred while retrieving  the user data."
+        print(f"Error: {str(e)}")
+        return render_template('general_error.html', error_message=error_message)
 
 
 @app.route('/add_user', methods=['GET', 'POST'])
 def add_user():
+    """Adds a new user to the system."""
     if request.method == 'POST':
         user_name = request.form.get('name')
         user_id = id_generator()
         user_movie_list = []
-        data_manager.add_user(user_name, user_id, user_movie_list)
-        return redirect(url_for('list_users'))
+        try:
+            data_manager.add_user(user_name, user_id, user_movie_list)
+            return redirect(url_for('list_users'))
+        except Exception as e:
+            error_message = "An error occurred while adding a new user."
+            print(f"Error: {str(e)}")
+            return render_template('general_error.html', error_message=error_message)
     return render_template('add_user.html')
 
 
 @app.route('/users/<user_id>/add_movie', methods=['GET', 'POST'])
 def add_movie(user_id):
+    """Adds a movie to a specific user's movie list."""
+
     if request.method == 'POST':
         movie = request.form.get('movie')
 
@@ -80,6 +102,8 @@ def add_movie(user_id):
 
 @app.route('/users/<user_id>/update_movie/<movie_id>', methods=['GET', 'POST'])
 def update_movie(user_id, movie_id):
+    """Updates a movie in a specific user's movie list."""
+
     user_movie_list = data_manager.get_user_movies(user_id)
 
     movie_to_update = None
@@ -101,16 +125,24 @@ def update_movie(user_id, movie_id):
         updated_poster_link = request.form['poster']
         updated_imdb_link = request.form['imdb_link']
 
-        data_manager.update_movie(user_id, movie_id, updated_title, updated_rating,
-                                  updated_year, updated_poster_link, updated_director, updated_imdb_link)
+        try:
+            data_manager.update_movie(user_id, movie_id, updated_title, updated_rating,
+                                      updated_year, updated_poster_link, updated_director, updated_imdb_link)
 
-        return redirect(url_for('user_movies', user_id=user_id))
+            return redirect(url_for('user_movies', user_id=user_id))
+
+        except Exception as e:
+            error_message = "An error occurred while updating the movie."
+            print(f"Error: {str(e)}")
+            return render_template('error.html', error_message=error_message)
 
     return render_template('update_movie.html', movie_id=movie_id, user_id=user_id, movie=movie_to_update)
 
 
 @app.route('/users/<user_id>/delete_movie/<movie_id>', methods=['GET', 'POST'])
 def delete_movie(user_id, movie_id):
+    """Deletes a movie from a specific user's movie list."""
+
     if request.method == 'POST':
         try:
             data_manager.delete_movie(user_id, movie_id)
@@ -126,6 +158,7 @@ def delete_movie(user_id, movie_id):
 
 @app.errorhandler(404)
 def page_not_found():
+    """Renders the 404 page."""
     return render_template('404.html'), 404
 
 
