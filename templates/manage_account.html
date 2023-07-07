@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title> Manage User</title>
+     <link rel="stylesheet" href="/static/general-style.css">
+
+</head>
+<body>
+            <li>
+                <form action="/users/{{ user_id }}/manage_account/delete_user" method="post" onsubmit="return confirm('Are you sure you want to delete this user?')">
+                    <button type="submit" class="delete-button"> Delete Account  </button>
+                </form>
+            </li>
+</body>
+</html>

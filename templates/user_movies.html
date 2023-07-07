@@ -8,6 +8,10 @@
 <body>
     <div class="list-movies-title">
         <h1>{{ user_name }}'s Moviepedia</h1>
+        <a href="{{ url_for('manage_account', user_id=user_id) }}" class="icon-link">
+    <img src="{{ url_for('static', filename='settings_icon.png') }}" alt="Settings Icon" class="icon-image" />
+        </a>
+
     </div>
 
 <div>

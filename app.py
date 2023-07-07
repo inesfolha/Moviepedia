@@ -1,8 +1,9 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, send_from_directory
 from data_manager.json_data_manager import JSONDataManager
 from flask_bcrypt import Bcrypt
 from helpers.omdb_api_extractor import data_extractor, get_imdb_link
 from helpers.authentication_helpers import is_valid_password
+import os
 
 import uuid
 
@@ -169,13 +170,24 @@ def delete_movie(user_id, movie_id):
     return render_template('general_error.html', error_message=error_message)
 
 
-@app.route('/users/<user_id>/delete_user', methods=['GET', 'POST'])
+@app.route('/users/<user_id>/manage_account', methods=['GET'])
+def manage_account(user_id):
+    # render the page
+    return render_template('manage_account.html', user_id=user_id)
+
+
+@app.route('/users/<user_id>/manage_account/delete_user', methods=['GET', 'POST'])
+def change_password(user_id):
+    return render_template('change_password.html', user_id=user_id)
+
+
+@app.route('/users/<user_id>/manage_account/delete_user', methods=['GET', 'POST'])
 def delete_user(user_id):
     """Deletes a user """
     if request.method == 'POST':
         try:
             data_manager.delete_user(user_id)
-            return redirect(url_for('list_users'))
+            return redirect(url_for('home'))
 
         except ValueError as e:
             error_message = str(e)
@@ -216,6 +228,12 @@ def login():
 def page_not_found():
     """Renders the 404 page."""
     return render_template('404.html'), 404
+
+
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(os.path.join(app.root_path, 'static'),
+                               'icon.png', mimetype='image/png')
 
 
 if __name__ == '__main__':
