@@ -1,9 +1,13 @@
 from flask import Flask, render_template, request, redirect, url_for
 from data_manager.json_data_manager import JSONDataManager
+from flask_bcrypt import Bcrypt
 from helpers.omdb_api_extractor import data_extractor, get_imdb_link
+from helpers.authentication_helpers import is_valid_password
+
 import uuid
 
 app = Flask(__name__)
+bcrypt = Bcrypt(app)
 data_manager = JSONDataManager('data/data.json')
 
 
@@ -49,15 +53,25 @@ def add_user():
     """Adds a new user to the system."""
     if request.method == 'POST':
         user_name = request.form.get('name')
-        user_id = id_generator()
-        user_movie_list = []
+        user_password = request.form.get('password')
         try:
-            data_manager.add_user(user_name, user_id, user_movie_list)
-            return redirect(url_for('list_users'))
+            if is_valid_password(user_password):
+                encrypted_password = bcrypt.generate_password_hash(user_password).decode('utf-8')
+                user_id = id_generator()
+                user_movie_list = []
+
+                data_manager.add_user(user_name, encrypted_password, user_id, user_movie_list)
+                return redirect(url_for('login'))
+            else:
+                error_message = "Invalid password. Password needs to have at least 8 characters, " \
+                                "one uppercase letter, one number and one special character."
+                return render_template('add_user.html', error_message=error_message)
+
         except Exception as e:
             error_message = "An error occurred while adding a new user."
             print(f"Error: {str(e)}")
             return render_template('general_error.html', error_message=error_message)
+
     return render_template('add_user.html')
 
 
@@ -142,7 +156,6 @@ def update_movie(user_id, movie_id):
 @app.route('/users/<user_id>/delete_movie/<movie_id>', methods=['GET', 'POST'])
 def delete_movie(user_id, movie_id):
     """Deletes a movie from a specific user's movie list."""
-
     if request.method == 'POST':
         try:
             data_manager.delete_movie(user_id, movie_id)
@@ -173,6 +186,30 @@ def delete_user(user_id):
 
     error_message = "Sorry, this page does not support GET requests"
     return render_template('general_error.html', error_message=error_message)
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        user_password = request.form.get('password')
+
+        try:
+            user_data = data_manager.get_user_data()
+            for user in user_data:
+                if user['name'] == username and bcrypt.check_password_hash(user['password'], user_password):
+                    user_id = user['id']
+                    return redirect(url_for('user_movies', user_id=user_id))
+            else:
+                error_message = "Username or password Incorrect, please try again"
+                return render_template('login.html', error_message=error_message)
+
+        except Exception as e:
+            error_message = "An error occurred while login in."
+            print(f"Error: {str(e)}")
+            return render_template('general_error.html', error_message=error_message)
+
+    return render_template('login.html')
 
 
 @app.errorhandler(404)

@@ -2,23 +2,23 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Add User </title>
+    <title>login </title>
     <link rel="stylesheet" href="/static/general-style.css">
     <link rel="stylesheet" href="/static/add-user-style.css">
 </head>
 <body>
 
 <div class="title">
-    <h1> New User</h1>
+    <h1> Login </h1>
 </div>
 
     <div class="add-user-box">
             <div class="enter-user-box">
                 <form method="POST">
-                        <label for="name"> Name:</label>
-                        <input type="text" name="name" id="name" required><br>
+                        <label for="username"> Username:</label>
+                        <input type="text" name="username" id="username" required><br>
                         <label for="password"> Password:</label>
-                        <input type="password" name="password" id="password" required><button type="submit"> Add </button> <br>
+                        <input type="password" name="password" id="password" required><button type="submit"> Login </button> <br>
                 </form>
                 <br>{{error_message}}
             </div>
@@ -30,7 +30,11 @@
         </a>
 
         <a href="{{ url_for('list_users') }}">
-            <button class="bottom-right-button">Back to all users</button>
+            <button class="bottom-right-button"> All users</button>
+        </a>
+
+        <a href="{{ url_for('add_user') }}">
+            <button class="bottom-right-button">New User </button>
         </a>
     </div>
 </body>

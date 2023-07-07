@@ -23,7 +23,7 @@ class DataManagerInterface(ABC):
         pass
 
     @abstractmethod
-    def add_user(self, user_name, user_id, user_movie_list):
+    def add_user(self, user_name, encrypted_password, user_id, user_movie_list):
         pass
 
     @abstractmethod
@@ -36,4 +36,8 @@ class DataManagerInterface(ABC):
 
     @abstractmethod
     def delete_user(self, user_id):
+        pass
+
+    @abstractmethod
+    def get_user_data(self):
         pass
