@@ -5,11 +5,12 @@ from helpers.omdb_api_extractor import data_extractor, get_imdb_link
 from helpers.authentication_helpers import is_valid_password
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from data_manager.user import User
+from dotenv import load_dotenv
 import os
 import uuid
-
+load_dotenv()
 app = Flask(__name__)
-app.secret_key = "V3rystrongpassword_"
+app.secret_key = os.getenv("app.secret_key")
 bcrypt = Bcrypt(app)
 data_manager = JSONDataManager('data/data.json')
 login_manager = LoginManager(app)

@@ -1,17 +1,18 @@
 import json
-
+from dotenv import load_dotenv
+import os
 import requests
 from colorama import Fore, init
-
+load_dotenv()
 init()
 
-API_KEY = 'e9b4c8ec'
-URL = 'http://www.omdbapi.com/?i=tt3896198&apikey=e9b4c8ec'
+API_KEY = os.getenv("API_KEY")
+URL = f'http://www.omdbapi.com/?i=tt3896198&apikey={API_KEY}'
 
 
 def data_extractor(movie):
     try:
-        response = requests.get(f'http://www.omdbapi.com/?i=tt3896198&apikey=e9b4c8ec&t={movie}')
+        response = requests.get(f'http://www.omdbapi.com/?i=tt3896198&apikey={API_KEY}&t={movie}')
         response.raise_for_status()  # raise an exception if the response status code is not 200 OK
         data_result = response.json()
         return data_result
