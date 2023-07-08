@@ -16,7 +16,7 @@
             <div class="enter-user-box">
                 <form method="POST">
                         <label for="username"> Username:</label>
-                        <input type="text" name="username" id="username" required><br>
+                        <input type="text" name="username" id="username" value="{% if request.args.get('username') %}{{ request.args.get('username') }}{% endif %}" required><br>
                         <label for="password"> Password:</label>
                         <input type="password" name="password" id="password" required><button type="submit"> Login </button> <br>
                 </form>

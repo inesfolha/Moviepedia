@@ -62,7 +62,7 @@ def add_user():
                 user_movie_list = []
 
                 data_manager.add_user(user_name, encrypted_password, user_id, user_movie_list)
-                return redirect(url_for('login'))
+                return redirect(url_for('login', username=user_name))
             else:
                 error_message = "Invalid password. Password needs to have at least 8 characters, " \
                                 "one uppercase letter, one number and one special character."
