@@ -131,6 +131,7 @@ class JSONDataManager(DataManagerInterface):
             raise ValueError(f"User with ID {user_id} not found.")
 
     def get_user_data(self):
+        """Retrieves user data from the data manager."""
         users_data = []
         for user in self.data:
             username = user['name']
@@ -140,6 +141,7 @@ class JSONDataManager(DataManagerInterface):
         return users_data
 
     def update_password(self, user_id, new_password):
+        """Updates the password of a user."""
         try:
             user = next(user for user in self.data if user['id'] == user_id)
             user['password'] = new_password

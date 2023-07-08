@@ -1,13 +1,16 @@
-from flask import Flask, render_template, request, redirect, url_for, send_from_directory
-from data_manager.json_data_manager import JSONDataManager
-from flask_bcrypt import Bcrypt
-from helpers.omdb_api_extractor import data_extractor, get_imdb_link
-from helpers.authentication_helpers import is_valid_password
-from flask_login import LoginManager, login_user, logout_user, login_required, current_user
-from data_manager.user import User
-from dotenv import load_dotenv
 import os
 import uuid
+
+from dotenv import load_dotenv
+from flask import Flask, render_template, request, redirect, url_for, send_from_directory
+from flask_bcrypt import Bcrypt
+from flask_login import LoginManager, login_user, logout_user, login_required, current_user
+
+from data_manager.json_data_manager import JSONDataManager
+from data_manager.user import User
+from helpers.authentication_helpers import is_valid_password
+from helpers.omdb_api_extractor import data_extractor, get_imdb_link
+
 load_dotenv()
 app = Flask(__name__)
 app.secret_key = os.getenv("app.secret_key")
@@ -18,6 +21,8 @@ login_manager = LoginManager(app)
 
 @login_manager.user_loader
 def load_user(user_id):
+    """Loads a user from the user ID."""
+
     user_data = data_manager.get_user_data()
     user = next((user for user in user_data if user['id'] == user_id), None)
     if user:
@@ -193,12 +198,14 @@ def delete_movie(user_id, movie_id):
 @app.route('/users/<user_id>/manage_account', methods=['GET'])
 @login_required
 def manage_account(user_id):
+    """Renders the manage account page for a specific user."""
     return render_template('manage_account.html', user_id=user_id)
 
 
 @app.route('/users/<user_id>/manage_account/update_password', methods=['GET', 'POST'])
 @login_required
 def change_password(user_id):
+    """Updates the password for a specific user."""
     if request.method == 'POST':
         current_password = request.form.get('current_password')
         new_password = request.form.get('new_password')
@@ -250,6 +257,7 @@ def delete_user(user_id):
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    """Authenticates the user and logs them in"""
     if request.method == 'POST':
         username = request.form.get('username')
         user_password = request.form.get('password')
@@ -277,6 +285,7 @@ def login():
 @app.route('/logout')
 @login_required
 def logout():
+    """Logs out the currently logged-in user."""
     logout_user()
     return redirect(url_for('home'))
 
@@ -295,6 +304,7 @@ def unauthorized(error):
 
 @app.route('/favicon.ico')
 def favicon():
+    """Serves the favicon icon file."""
     return send_from_directory(os.path.join(app.root_path, 'static'),
                                'icon.png', mimetype='image/png')
 
