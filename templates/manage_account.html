@@ -7,10 +7,24 @@
 
 </head>
 <body>
-            <li>
-                <form action="/users/{{ user_id }}/manage_account/delete_user" method="post" onsubmit="return confirm('Are you sure you want to delete this user?')">
-                    <button type="submit" class="delete-button"> Delete Account  </button>
-                </form>
-            </li>
+<div class="title">
+    <h1> Manage Account </h1>
+</div>
+<div class="buttons-container">
+
+    <form action="{{ url_for('delete_user', user_id=user_id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this user?')">
+        <button type="submit"> Delete Account  </button>
+    </form>
+
+    <form action="{{ url_for('change_password', user_id=user_id) }}">
+        <button type="submit"> Change Password  </button>
+    </form>
+
+    <a href="{{ url_for('login') }}">
+        <button> Logout </button></a>
+</div>
+
+
+
 </body>
 </html>

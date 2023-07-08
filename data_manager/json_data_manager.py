@@ -138,3 +138,11 @@ class JSONDataManager(DataManagerInterface):
             user_id = user['id']
             users_data.append({'name': username, 'password': password, 'id': user_id})
         return users_data
+
+    def update_password(self, user_id, new_password):
+        try:
+            user = next(user for user in self.data if user['id'] == user_id)
+            user['password'] = new_password
+        except StopIteration:
+            raise Exception("User not found")
+

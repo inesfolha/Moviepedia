@@ -41,3 +41,7 @@ class DataManagerInterface(ABC):
     @abstractmethod
     def get_user_data(self):
         pass
+
+    @abstractmethod
+    def update_password(self, user_id, new_password):
+        pass

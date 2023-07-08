@@ -172,12 +172,35 @@ def delete_movie(user_id, movie_id):
 
 @app.route('/users/<user_id>/manage_account', methods=['GET'])
 def manage_account(user_id):
-    # render the page
     return render_template('manage_account.html', user_id=user_id)
 
 
-@app.route('/users/<user_id>/manage_account/delete_user', methods=['GET', 'POST'])
+@app.route('/users/<user_id>/manage_account/update_password', methods=['GET', 'POST'])
 def change_password(user_id):
+    if request.method == 'POST':
+        current_password = request.form.get('current_password')
+        new_password = request.form.get('new_password')
+        try:
+            user_data = data_manager.get_user_data()
+            user = next(user for user in user_data if user['id'] == user_id)
+            if user and bcrypt.check_password_hash(user['password'], current_password):
+                if is_valid_password(new_password):
+                    encrypted_password = bcrypt.generate_password_hash(new_password).decode('utf-8')
+                    data_manager.update_password(user_id, encrypted_password)
+                    return redirect(url_for('home'))
+                else:
+                    error_message = "Invalid password. Password needs to have at least 8 characters, " \
+                                    "one uppercase letter, one number and one special character."
+                    return render_template('change_password.html', error_message=error_message)
+            else:
+                error_message = "Password Incorrect, please try again"
+                return render_template('change_password.html', error_message=error_message)
+
+        except Exception as e:
+            error_message = "An error occurred while adding updating the password."
+            print(f"Error: {str(e)}")
+            return render_template('general_error.html', error_message=error_message)
+
     return render_template('change_password.html', user_id=user_id)
 
 
