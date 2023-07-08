@@ -13,7 +13,8 @@ from helpers.omdb_api_extractor import data_extractor, get_imdb_link
 
 load_dotenv()
 app = Flask(__name__)
-app.secret_key = os.getenv("app.secret_key")
+
+app.secret_key = os.getenv("APP_SECRET_KEY")
 bcrypt = Bcrypt(app)
 data_manager = JSONDataManager('data/data.json')
 login_manager = LoginManager(app)
