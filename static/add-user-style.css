@@ -3,7 +3,7 @@
   justify-content: center;
   align-items: center;
   height: 250px;
-  width: 500px;
+  width: 600px;
   margin: 0 auto;
 
 }
@@ -17,6 +17,9 @@
 .enter-user-box label {
   color: white;
   font-size: 20px;
+  margin-bottom: 5px;
+  display: inline-block;
+  width: 200px;
 }
 
 .enter-user-box input[type="text"], .enter-user-box input[type="password"] {

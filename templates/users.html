@@ -14,7 +14,11 @@
     <ul>
         {% for user in users %}
             <li>
-                <a href="/login?username={{ user[0] }}">{{ user[0] }}</a>
+                {% if current_user.is_authenticated and user[1] == current_user.id %}
+                    <a href="{{ url_for('user_movies', user_id=current_user.id) }}">{{ user[0] }}</a>
+                {% else %}
+                    <a href="{{ url_for('login', username=user[0]) }}">{{ user[0] }}</a>
+                {% endif %}
             </li>
         {% endfor %}
     </ul>
@@ -22,10 +26,20 @@
 <div class="buttons-bar">
     <div class="buttons-container">
         <a href="{{ url_for('add_user') }}">
-            <button>New User </button></a>
+            <button>Sign up </button></a>
 
         <a href="{{ url_for('home') }}">
             <button> Back to Homepage </button></a>
+
+         {% if current_user.is_authenticated %}
+            <a href="{{ url_for('logout') }}">
+                <button class="bottom-right-button">Logout</button>
+            </a>
+        {% else %}
+            <a href="{{ url_for('login') }}">
+                <button>Login</button>
+            </a>
+        {% endif %}
     </div>
 </div>
 </body>

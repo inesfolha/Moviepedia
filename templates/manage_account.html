@@ -20,8 +20,12 @@
         <button type="submit"> Change Password  </button>
     </form>
 
-    <a href="{{ url_for('login') }}">
+    <a href="{{ url_for('logout') }}">
         <button> Logout </button></a>
+
+    <a href="{{ url_for('user_movies', user_id=user_id) }}">
+            <button> Back to my Movies</button>
+        </a>
 </div>
 
 
