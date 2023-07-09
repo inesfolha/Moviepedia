@@ -1,5 +1,3 @@
-import bcrypt
-
 from .data_manager_interface import DataManagerInterface
 from .file_handler import load_json_data, save_json_file
 
@@ -147,4 +145,3 @@ class JSONDataManager(DataManagerInterface):
             user['password'] = new_password
         except StopIteration:
             raise Exception("User not found")
-
