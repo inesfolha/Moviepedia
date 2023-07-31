@@ -17,8 +17,10 @@ class JSONDataManager(DataManagerInterface):
         """Retrieves a list of all users in the data."""
         try:
             users = [(user['name'], user['id']) for user in self.data]
-            return users
-
+            if users:
+                return users
+            else:
+                raise TypeError("Error retrieving users data")
         except Exception as e:
             raise RuntimeError("An error occurred while retrieving user data.") from e
 
@@ -27,6 +29,9 @@ class JSONDataManager(DataManagerInterface):
         try:
             user_name = next((user.get('name') for user in self.data if user['id'] == user_id), None)
             return user_name
+
+        except StopIteration:
+            raise TypeError(f"Error finding the user with id {user_id}")
         except Exception as e:
             raise RuntimeError("An error occurred while retrieving user data.") from e
 
@@ -35,17 +40,24 @@ class JSONDataManager(DataManagerInterface):
         try:
             user_movies = next((user.get('movies') for user in self.data if user['id'] == user_id), None)
             return user_movies
+
         except StopIteration:
-            return None
+            raise TypeError(f"Error finding the user with id {user_id}")
         except Exception as e:
             raise RuntimeError("An error occurred while retrieving user movies.") from e
 
     def add_user(self, user_name, encrypted_password, user_id, user_movie_list):
         """Adds a new user with the given name, ID, and movie list to the data."""
         try:
+            existing_user = next((user for user in self.data if user['name'] == user_name), None)
+            if existing_user:
+                # User with the same name already exists
+                return False
+
             new_user = {'id': user_id, 'name': user_name, 'password': encrypted_password, 'movies': user_movie_list}
             self.data.append(new_user)
             save_json_file(self.filename, self.data)
+            return True  # User added successfully
         except Exception as e:
             raise RuntimeError("An error occurred while adding a new user.") from e
 
@@ -144,4 +156,4 @@ class JSONDataManager(DataManagerInterface):
             user = next(user for user in self.data if user['id'] == user_id)
             user['password'] = new_password
         except StopIteration:
-            raise Exception("User not found")
+            raise TypeError(f"Error finding the user with id {user_id}")

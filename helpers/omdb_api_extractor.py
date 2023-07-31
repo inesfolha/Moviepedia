@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 import os
 import requests
 from colorama import Fore, init
-load_dotenv()
+from dotenv import load_dotenv
 init()
 
 API_KEY = os.getenv("API_KEY")

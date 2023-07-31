@@ -12,11 +12,13 @@ from helpers.authentication_helpers import is_valid_password
 from helpers.omdb_api_extractor import data_extractor, get_imdb_link
 
 load_dotenv()
+
+JSON_STORAGE_FILE = os.getenv('STORAGE_FILE')
 app = Flask(__name__)
 
 app.secret_key = os.getenv("APP_SECRET_KEY")
 bcrypt = Bcrypt(app)
-data_manager = JSONDataManager('data/data.json')
+data_manager = JSONDataManager(JSON_STORAGE_FILE)
 login_manager = LoginManager(app)
 
 
@@ -51,8 +53,15 @@ def list_users():
     try:
         users = data_manager.get_all_users()
         return render_template('users.html', users=users)
-    except Exception as e:
+    except TypeError as te:
+        print(f"Error: {str(te)}")
+        return render_template('general_error.html', error_message="Error retrieving users data")
+    except IOError as e:
         error_message = "An error occurred while retrieving user data."
+        print(f"IOError: {str(e)}")
+        return render_template('general_error.html', error_message=error_message)
+    except RuntimeError as e:
+        error_message = "An unexpected error occurred."
         print(f"Error: {str(e)}")
         return render_template('general_error.html', error_message=error_message)
 
@@ -66,8 +75,15 @@ def user_movies(user_id):
         user_name = data_manager.get_user_name(user_id)
         movies = data_manager.get_user_movies(user_id)
         return render_template('user_movies.html', movies=movies, user_name=user_name, user_id=user_id)
-    except Exception as e:
-        error_message = "An error occurred while retrieving  the user data."
+    except TypeError as te:
+        print(f"Error: {str(te)}")
+        return render_template('general_error.html', error_message="Error retrieving user data")
+    except IOError as e:
+        error_message = "An error occurred while retrieving the user data."
+        print(f"IOError: {str(e)}")
+        return render_template('general_error.html', error_message=error_message)
+    except RuntimeError as e:
+        error_message = "An unexpected error occurred."
         print(f"Error: {str(e)}")
         return render_template('general_error.html', error_message=error_message)
 
@@ -84,15 +100,23 @@ def add_user():
                 user_id = id_generator()
                 user_movie_list = []
 
-                data_manager.add_user(user_name, encrypted_password, user_id, user_movie_list)
-                return redirect(url_for('login', username=user_name))
+                # Call the add_user method and check if the user was added successfully
+                if data_manager.add_user(user_name, encrypted_password, user_id, user_movie_list):
+                    return redirect(url_for('login', username=user_name))
+                else:
+                    error_message = "Username already exists. Please choose a different username."
+                    return render_template('add_user.html', error_message=error_message)
             else:
                 error_message = "Invalid password. Password needs to have at least 8 characters, " \
                                 "one uppercase letter, one number and one special character."
                 return render_template('add_user.html', error_message=error_message)
 
-        except Exception as e:
+        except IOError as e:
             error_message = "An error occurred while adding a new user."
+            print(f"IOError: {str(e)}")
+            return render_template('general_error.html', error_message=error_message)
+        except RuntimeError as e:
+            error_message = "An unexpected error occurred."
             print(f"Error: {str(e)}")
             return render_template('general_error.html', error_message=error_message)
 
@@ -110,30 +134,43 @@ def add_movie(user_id):
         movie_info = data_extractor(movie)
         movie_link = get_imdb_link(movie)
 
-        if movie_info is not None and 'Title' in movie_info and 'Year' in movie_info and 'Director' in movie_info:
-            title = movie_info.get("Title")
-            if len(movie_info['Ratings']) > 0:
-                rating = float(movie_info['Ratings'][0]['Value'].split("/")[0])
-            else:
-                rating = None
+        try:
+            if movie_info is not None and 'Title' in movie_info and 'Year' in movie_info and 'Director' in movie_info:
+                title = movie_info.get("Title")
+                if len(movie_info['Ratings']) > 0:
+                    rating = float(movie_info['Ratings'][0]['Value'].split("/")[0])
+                else:
+                    rating = None
 
-            year_str = movie_info.get('Year')
-            if year_str.isdigit():
-                year = int(year_str)
+                year_str = movie_info.get('Year')
+                if year_str.isdigit():
+                    year = int(year_str)
+                else:
+                    error_message = "Failed to retrieve movie information. Please try a different movie"
+                    return render_template('general_error.html', error_message=error_message)
+
+                poster = movie_info.get('Poster')
+                director = movie_info.get('Director')
+                movie_id = id_generator()
+
+                data_manager.add_movie(user_id, movie_id, title, rating, year, poster, director, movie_link)
+
+                return redirect(url_for('user_movies', user_id=user_id))
+
             else:
-                error_message = "Failed to retrieve movie information. Please try a different movie"
+                error_message = "Failed to retrieve movie information. Please make sure the movie exists."
                 return render_template('general_error.html', error_message=error_message)
 
-            poster = movie_info.get('Poster')
-            director = movie_info.get('Director')
-            movie_id = id_generator()
-
-            data_manager.add_movie(user_id, movie_id, title, rating, year, poster, director, movie_link)
-
-            return redirect(url_for('user_movies', user_id=user_id))
-
-        else:
-            error_message = "Failed to retrieve movie information. Please make sure the movie exists."
+        except ValueError as e:
+            error_message = str(e)
+            return render_template('general_error.html', error_message=error_message)
+        except IOError as e:
+            error_message = "An error occurred while adding a movie."
+            print(f"IOError: {str(e)}")
+            return render_template('general_error.html', error_message=error_message)
+        except RuntimeError as e:
+            error_message = "An unexpected error occurred."
+            print(f"Error: {str(e)}")
             return render_template('general_error.html', error_message=error_message)
 
     return render_template('add_movie.html', user_id=user_id)
@@ -171,10 +208,20 @@ def update_movie(user_id, movie_id):
 
             return redirect(url_for('user_movies', user_id=user_id))
 
-        except Exception as e:
+        except ValueError as ve:
             error_message = "An error occurred while updating the movie."
+            print(f"ValueError: {str(ve)}")
+            return render_template('general_error.html', error_message=error_message)
+
+        except IOError as e:
+            error_message = "An error occurred while updating the movie."
+            print(f"IOError: {str(e)}")
+            return render_template('general_error.html', error_message=error_message)
+
+        except RuntimeError as e:
+            error_message = "An unexpected error occurred."
             print(f"Error: {str(e)}")
-            return render_template('error.html', error_message=error_message)
+            return render_template('general_error.html', error_message=error_message)
 
     return render_template('update_movie.html', movie_id=movie_id, user_id=user_id, movie=movie_to_update)
 
@@ -191,6 +238,9 @@ def delete_movie(user_id, movie_id):
             # Handle possible errors with the movie id
             error_message = "Sorry, we could not find that movie!"
             return render_template('general_error.html', error_message=error_message)
+        except RuntimeError as re:
+            print(f"Error: {str(re)}")
+            return render_template('general_error.html', error_message=re)
 
     error_message = "Sorry, this page does not support GET requests"
     return render_template('general_error.html', error_message=error_message)
@@ -228,8 +278,15 @@ def change_password(user_id):
                 error_message = "Password Incorrect, please try again"
                 return render_template('change_password.html', error_message=error_message)
 
-        except Exception as e:
-            error_message = "An error occurred while adding updating the password."
+        except TypeError as te:
+            print(f"Error: {str(te)}")
+            return render_template('general_error.html', error_message="Error retrieving user data")
+        except IOError as e:
+            error_message = "An error occurred while updating the password."
+            print(f"IOError: {str(e)}")
+            return render_template('general_error.html', error_message=error_message)
+        except RuntimeError as e:
+            error_message = "An unexpected error occurred."
             print(f"Error: {str(e)}")
             return render_template('general_error.html', error_message=error_message)
 
@@ -275,8 +332,12 @@ def login():
                 error_message = "Username or password Incorrect, please try again"
                 return render_template('login.html', error_message=error_message)
 
-        except Exception as e:
-            error_message = "An error occurred while login in."
+        except IOError as e:
+            error_message = "An error occurred while logging in."
+            print(f"IOError: {str(e)}")
+            return render_template('general_error.html', error_message=error_message)
+        except RuntimeError as e:
+            error_message = "An unexpected error occurred."
             print(f"Error: {str(e)}")
             return render_template('general_error.html', error_message=error_message)
 
