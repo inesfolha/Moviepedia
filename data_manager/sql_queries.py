@@ -4,13 +4,20 @@ QUERY_GET_ALL_USERS = "SELECT * FROM users"
 # Query to get the username by user ID
 QUERY_GET_USER_NAME_BY_ID = "SELECT username FROM users WHERE id = :id"
 
+QUERY_GET_MOVIE_BY_TITLE = """
+SELECT movie_id
+FROM movies
+WHERE title = :title
+"""
+
 # Query to get all movies associated with a user
 QUERY_GET_USER_MOVIES = """
-SELECT m.*
+SELECT m.movie_id AS id, m.title, m.director, m.year, m.rating, m.poster, m.movie_link
 FROM movies m
 JOIN user_movies um ON m.movie_id = um.movie_id
 WHERE um.user_id = :user_id
 """
+
 
 # Query to insert a new movie into the movies table
 QUERY_INSERT_MOVIE = """

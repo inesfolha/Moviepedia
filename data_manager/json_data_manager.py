@@ -1,5 +1,5 @@
-from .data_manager_interface import DataManagerInterface
-from .file_handler import load_json_data, save_json_file
+from data_manager_interface import DataManagerInterface
+from file_handler import load_json_data, save_json_file
 
 
 class JSONDataManager(DataManagerInterface):
@@ -157,3 +157,6 @@ class JSONDataManager(DataManagerInterface):
             user['password'] = new_password
         except StopIteration:
             raise TypeError(f"Error finding the user with id {user_id}")
+
+data_manager = JSONDataManager(r'C:\Users\inesf\PycharmProjects\movie_web_app(phase5)\movie_web_app\data\data.json')
+print(data_manager.get_user_movies('deadee'))
