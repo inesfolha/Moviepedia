@@ -10,15 +10,18 @@ from data_manager.json_data_manager import JSONDataManager
 from data_manager.user import User
 from helpers.authentication_helpers import is_valid_password
 from helpers.omdb_api_extractor import data_extractor, get_imdb_link
-
+from data_manager.sqlite_data_manager import SQLiteDataManager
 load_dotenv()
 
-JSON_STORAGE_FILE = os.getenv('STORAGE_FILE')
+#JSON_STORAGE_FILE = os.getenv('STORAGE_FILE')
+DB_URI = os.getenv('DATABASE')
+
 app = Flask(__name__)
 
 app.secret_key = os.getenv("APP_SECRET_KEY")
 bcrypt = Bcrypt(app)
-data_manager = JSONDataManager(JSON_STORAGE_FILE)
+#data_manager = JSONDataManager(JSON_STORAGE_FILE)
+data_manager = SQLiteDataManager(DB_URI)
 login_manager = LoginManager(app)
 
 
