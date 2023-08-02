@@ -79,3 +79,20 @@ SELECT 1 FROM users
 WHERE username = :username
 LIMIT 1;
 """
+
+QUERY_DELETE_USER_MOVIES = """
+DELETE FROM user_movies
+WHERE user_id = :user_id;"""
+
+QUERY_DELETE_ORPHAN_MOVIES = """
+DELETE FROM movies
+WHERE movie_id NOT IN (SELECT DISTINCT movie_id FROM user_movies);
+"""
+
+QUERY_CHECK_EXISTING_MOVIE = """
+SELECT 1 FROM movies
+WHERE movie_id = :movie_id
+LIMIT 1;
+"""
+
+

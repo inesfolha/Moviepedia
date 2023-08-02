@@ -81,7 +81,7 @@ class JSONDataManager(DataManagerInterface):
         except Exception as e:
             raise RuntimeError("An error occurred while adding a new movie.") from e
 
-    def update_movie(self, user_id, movie_id, title, rating, year, poster, director, movie_link):
+    def update_movie(self, user_id,  movie_id, new_movie_id, title, rating, year, poster, director, movie_link):
         """Updates the details of a movie identified by the user ID and movie ID."""
         try:
             movie_to_update = None
