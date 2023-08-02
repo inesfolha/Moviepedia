@@ -30,8 +30,8 @@ QUERY_INSERT_USER_MOVIE = "INSERT INTO user_movies (user_id, movie_id) VALUES (:
 
 # Query to insert a new user into the 'users' table
 QUERY_INSERT_USER = """
-INSERT INTO users (id, username, password)
-VALUES (:user_id, :user_name, :encrypted_password)
+INSERT INTO users (id, username, password, email)
+VALUES (:user_id, :user_name, :password, :email)
 """
 
 # Query to update the details of a movie in the 'movies' table
