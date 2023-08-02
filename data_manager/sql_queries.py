@@ -18,7 +18,6 @@ JOIN user_movies um ON m.movie_id = um.movie_id
 WHERE um.user_id = :user_id
 """
 
-
 # Query to insert a new movie into the movies table
 QUERY_INSERT_MOVIE = """
 INSERT INTO movies (movie_id, title, director, year, rating, poster, movie_link)
@@ -32,18 +31,6 @@ QUERY_INSERT_USER_MOVIE = "INSERT INTO user_movies (user_id, movie_id) VALUES (:
 QUERY_INSERT_USER = """
 INSERT INTO users (id, username, password, email)
 VALUES (:user_id, :user_name, :password, :email)
-"""
-
-# Query to update the details of a movie in the 'movies' table
-QUERY_UPDATE_MOVIE = """
-UPDATE movies
-SET title = :title,
-    director = :director,
-    year = :year,
-    rating = :rating,
-    poster = :poster,
-    movie_link = :movie_link
-WHERE movie_id = :movie_id
 """
 
 # Query to delete a movie from a user's movie list in the 'user_movies' table
@@ -64,4 +51,31 @@ QUERY_UPDATE_USER_PASSWORD = """
 UPDATE users
 SET password = :password
 WHERE id = :user_id
+"""
+
+
+# Query to check if the movie ID is associated with any other user
+QUERY_CHECK_MOVIE_ASSOCIATION = """
+SELECT 1 FROM user_movies
+WHERE movie_id = :movie_id
+AND user_id != :user_id
+LIMIT 1;
+"""
+
+
+# Query to delete the movie from the movies table if it's not associated with any other user
+QUERY_DELETE_MOVIE = """
+DELETE FROM movies
+WHERE movie_id = :movie_id
+AND NOT EXISTS (
+    SELECT 1 FROM user_movies
+    WHERE movie_id = :movie_id
+    LIMIT 1
+); """
+
+
+QUERY_CHECK_EXISTING_USER = """
+SELECT 1 FROM users
+WHERE username = :username
+LIMIT 1;
 """

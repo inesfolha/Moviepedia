@@ -8,11 +8,13 @@ from sql_queries import (
     QUERY_INSERT_MOVIE,
     QUERY_INSERT_USER,
     QUERY_INSERT_USER_MOVIE,
-    QUERY_UPDATE_MOVIE,
     QUERY_DELETE_USER_MOVIE,
     QUERY_DELETE_USER,
     QUERY_UPDATE_USER_PASSWORD,
-    QUERY_GET_MOVIE_BY_TITLE
+    QUERY_GET_MOVIE_BY_TITLE,
+    QUERY_CHECK_MOVIE_ASSOCIATION,
+    QUERY_DELETE_MOVIE,
+    QUERY_CHECK_EXISTING_USER,
 )
 
 
@@ -130,6 +132,13 @@ class SQLiteDataManager(DataManagerInterface):
 
     def add_user(self, user_name, encrypted_password, user_id, email):  # CHECKED
         """Adds a new user with the given name, ID, and movie list to the database."""
+        # Check if the provided username is already in use
+        params = {"username": user_name}
+        existing_user = self._execute_query(QUERY_CHECK_EXISTING_USER, params)
+
+        if existing_user:
+            return False  # User already exists
+
         params = {
             "user_id": user_id,
             "user_name": user_name,
@@ -139,13 +148,11 @@ class SQLiteDataManager(DataManagerInterface):
         self._execute_query(QUERY_INSERT_USER, params)
         return True  # User added successfully
 
-    def update_movie(self, user_id, movie_id, title, rating, year, poster, director, movie_link):
-        # FIGURE OUT HOW TO UPDATE THE MOVIE JUST FOR THE USER IN QUESTION AND NOT FOR ALL OF THEM #
-        # ADD SOME SPECIFIC COLUMN ON USER MOVIES
-        # OR CREATE AN ALIAS OF THE SAME MOVIE WITH A DIFFERENT ID WITH THE CHANGES (?)
-        """Updates the details of a movie identified by the user ID and movie ID."""
+    def update_movie(self, user_id, old_movie_id, new_movie_id, title, rating, year, poster, director, movie_link):  # CHECKED
+        """ Updates the details of a movie identified by the user ID and movie ID,
+        by creating an alias of the same movie with a different id associated with that user """
         params = {
-            "movie_id": movie_id,
+            "movie_id": new_movie_id,
             "title": title,
             "director": director,
             "year": year,
@@ -153,32 +160,75 @@ class SQLiteDataManager(DataManagerInterface):
             "poster": poster,
             "movie_link": movie_link,
         }
-        self._execute_query(QUERY_UPDATE_MOVIE, params)
+        params_2 = {
+            "movie_id": new_movie_id,
+            "user_id": user_id,
+            }
 
-    def delete_movie(self, user_id, movie_id):
-        """Deletes a movie with the specified movie ID from the user's movie list."""
-        params = {"user_id": user_id, "movie_id": movie_id}
-        self._execute_query(QUERY_DELETE_USER_MOVIE, params)
+        params_3 = {
+            "movie_id": old_movie_id,
+            "user_id": user_id,
+        }
+
+        user = self.get_user_name(user_id)
+        if not user:
+            raise ValueError(f"User with ID {user_id} not found")
+        # Add new updated movie
+        self._execute_query(QUERY_INSERT_MOVIE, params)
+
+        # Associate it with the user
+        self._execute_query(QUERY_INSERT_USER_MOVIE, params_2)
+
+        # Delete association with the old movie details
+        self._execute_query(QUERY_DELETE_USER_MOVIE, params_3)
+        return True
+
+    def delete_movie(self, user_id, movie_id):                                   #CHECKED
+        """Deletes a movie with the specified movie ID from the user's movie list.
+        Deletes the movie from the database if it is not associated with any other users"""
+
+        # Check if the movie ID is associated with any other user
+        params = {"user_id": user_id,
+                  "movie_id": movie_id}
+        result = self._execute_query(QUERY_CHECK_MOVIE_ASSOCIATION, params)
+
+        # If the movie is not associated with any other user, delete it from the movies table
+        if not result:
+            params = {"user_id": user_id, "movie_id": movie_id}
+            self._execute_query(QUERY_DELETE_USER_MOVIE, params)
+
+            # Also delete the movie from the movies table
+            self._execute_query(QUERY_DELETE_MOVIE, params)
+            return True
+
+        else:
+            # Movie is associated with other users, so only remove it from the current user's list
+            params = {"user_id": user_id, "movie_id": movie_id}
+            self._execute_query(QUERY_DELETE_USER_MOVIE, params)
+            return False
 
     def delete_user(self, user_id):
         """Delete a user with the provided user ID from the data."""
         params = {"user_id": user_id}
-        self._execute_query(QUERY_DELETE_USER, params)
+        self._execute_query(QUERY_DELETE_USER, params)      #MISSING:
+                                                            #DELETE ASSOCIATED MOVIES FROM USER_MOVIES
+                                                            #DELETE ALL MOVIES THAT ARE NOT ASSOCIATED WITH ANYONE ELSE
+        return True
 
-    def get_user_data(self):
+    def get_user_data(self):                              # CHECKED
         """Retrieves user data from the database"""
         users_data = []
         users = self._execute_query(QUERY_GET_ALL_USERS)
         for user in users:
             username = user['username']
             password = user['password']
-            user_id = user['id']
+            user_id = user['ID']
             movies = self.get_user_movies(user_id)
             user_data = {'name': username, 'password': password, 'id': user_id, 'movies': movies}
             users_data.append(user_data)
         return users_data
 
-    def update_password(self, user_id, new_password):
+    def update_password(self, user_id, new_password):         # ADD A OLD PASSWORD CHECK
         """Updates the password of a user."""
         params = {"user_id": user_id, "password": new_password}
         self._execute_query(QUERY_UPDATE_USER_PASSWORD, params)
@@ -199,3 +249,9 @@ data_manager = SQLiteDataManager(file_name)
 # 2023, "https://m.media-amazon.com/images/M/MV5BNzQ1ODUzYjktMzRiMS00ODNiLWI4NzQtOTRiN2VlNTNmODFjXkEyXkFqcGdeQXVyMTkxNjUyNQ@@._V1_SX300.jpg"
 # , "Joaquim Dos Santos, Kemp Powers, Justin K. Thompson", "https://www.imdb.com/title/tt9362722/")) # WORKS
 # print(data_manager.add_user('leaf', 'superhashedpassword', 'supermegauuid', 'email@leaf.com')) # WORKS
+#print(data_manager.update_movie('deadee', "26983540-d74a-4aba-aa17-259f9b2e2208","new movie id test", "Spider-Man: Across the Spider-Verse", 9.1,  #WORKS
+#2023, "https://m.media-amazon.com/images/M/MV5BNzQ1ODUzYjktMzRiMS00ODNiLWI4NzQtOTRiN2VlNTNmODFjXkEyXkFqcGdeQXVyMTkxNjUyNQ@@._V1_SX300.jpg", "Joaquim Dos Santos, Kemp Powers, Justin K. Thompson", "https://www.imdb.com/title/tt9362722/"))
+# print(data_manager.delete_movie('deadee', "new movie id test")) # WORKS
+# print(data_manager.add_user('Ines', 'encrypted_password', 'user_id', 'email')) #WORKS
+# print(data_manager.get_user_data()) # WORKS
+print(data_manager.delete_user('user_id')) #WORKS

@@ -158,5 +158,3 @@ class JSONDataManager(DataManagerInterface):
         except StopIteration:
             raise TypeError(f"Error finding the user with id {user_id}")
 
-data_manager = JSONDataManager(r'C:\Users\inesf\PycharmProjects\movie_web_app(phase5)\movie_web_app\data\data.json')
-print(data_manager.get_user_movies('deadee'))

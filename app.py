@@ -181,14 +181,14 @@ def add_movie(user_id):
 
 @app.route('/users/<user_id>/update_movie/<movie_id>', methods=['GET', 'POST'])
 @login_required
-def update_movie(user_id, movie_id):
+def update_movie(user_id, old_movie_id):
     """Updates a movie in a specific user's movie list."""
 
     user_movie_list = data_manager.get_user_movies(user_id)
 
     movie_to_update = None
     for movie in user_movie_list:
-        if movie['id'] == movie_id:
+        if movie['id'] == old_movie_id:
             movie_to_update = movie
             break
 
@@ -205,8 +205,10 @@ def update_movie(user_id, movie_id):
         updated_poster_link = request.form['poster']
         updated_imdb_link = request.form['imdb_link']
 
+        # CREATE A NEW MOVIE ID
+        new_movie_id = id_generator()
         try:
-            data_manager.update_movie(user_id, movie_id, updated_title, updated_rating,
+            data_manager.update_movie(user_id, old_movie_id, new_movie_id, updated_title, updated_rating,
                                       updated_year, updated_poster_link, updated_director, updated_imdb_link)
 
             return redirect(url_for('user_movies', user_id=user_id))
@@ -226,7 +228,7 @@ def update_movie(user_id, movie_id):
             print(f"Error: {str(e)}")
             return render_template('general_error.html', error_message=error_message)
 
-    return render_template('update_movie.html', movie_id=movie_id, user_id=user_id, movie=movie_to_update)
+    return render_template('update_movie.html', movie_id=old_movie_id, user_id=user_id, movie=movie_to_update)
 
 
 @app.route('/users/<user_id>/delete_movie/<movie_id>', methods=['GET', 'POST'])
@@ -299,21 +301,31 @@ def change_password(user_id):
 @app.route('/users/<user_id>/manage_account/delete_user', methods=['GET', 'POST'])
 @login_required
 def delete_user(user_id):
-    """Deletes a user """
+    """Deletes a user and all its associated movies """
     if request.method == 'POST':
-        try:
-            data_manager.delete_user(user_id)
-            return redirect(url_for('home'))
+        user_password = request.form.get('password')
+        user_password_2 = request.form.get('confirm_password')
 
-        except ValueError as e:
-            error_message = str(e)
-            return render_template('general_error.html', error_message=error_message)
-        except RuntimeError as e:
-            error_message = str(e)
-            return render_template('general_error.html', error_message=error_message)
+        if user_password == user_password_2:
+            try:
+                user_data = data_manager.get_user_data()
+                for user in user_data:
+                    if bcrypt.check_password_hash(user['password'], user_password):
+                        data_manager.delete_user(user_id)
+                return redirect(url_for('home'))
 
-    error_message = "Sorry, this page does not support GET requests"
-    return render_template('general_error.html', error_message=error_message)
+            except ValueError as e:
+                error_message = str(e)
+                return render_template('general_error.html', error_message=error_message)
+            except RuntimeError as e:
+                error_message = str(e)
+                return render_template('general_error.html', error_message=error_message)
+
+        else:
+            error_message = 'Passwords need to match'
+            return render_template('delete_movie.html',error_message=error_message)
+
+    return render_template('delete_movie.html')
 
 
 @app.route('/login', methods=['GET', 'POST'])

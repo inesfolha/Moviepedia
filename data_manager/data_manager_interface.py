@@ -27,7 +27,7 @@ class DataManagerInterface(ABC):
         pass
 
     @abstractmethod
-    def update_movie(self, user_id, movie_id, title, rating, year, poster, director, movie_link):
+    def update_movie(self, user_id, old_movie_id, new_movie_id, title, rating, year, poster, director, movie_link):
         pass
 
     @abstractmethod
