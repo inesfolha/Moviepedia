@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine, text, exc
 
-from data_manager_interface import DataManagerInterface
-from sql_queries import (
+from .data_manager_interface import DataManagerInterface
+from .sql_queries import (
     QUERY_GET_ALL_USERS,
     QUERY_GET_USER_NAME_BY_ID,
     QUERY_GET_USER_MOVIES,

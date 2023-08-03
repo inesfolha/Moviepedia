@@ -14,10 +14,10 @@
     <ul>
         {% for user in users %}
             <li>
-                {% if current_user.is_authenticated and user[1] == current_user.id %}
-                    <a href="{{ url_for('user_movies', user_id=current_user.id) }}">{{ user[0] }}</a>
+                {% if current_user.is_authenticated and user['id'] == current_user.id %}
+                    <a href="{{ url_for('user_movies', user_id=current_user.id) }}">{{ user['name'] }}</a>
                 {% else %}
-                    <a href="{{ url_for('login', username=user[0]) }}">{{ user[0] }}</a>
+                    <a href="{{ url_for('login', username=user['name']) }}">{{ user['name'] }}</a>
                 {% endif %}
             </li>
         {% endfor %}

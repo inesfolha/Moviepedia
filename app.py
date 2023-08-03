@@ -14,14 +14,14 @@ from data_manager.sqlite_data_manager import SQLiteDataManager
 load_dotenv()
 
 #JSON_STORAGE_FILE = os.getenv('STORAGE_FILE')
-DB_URI = os.getenv('DATABASE')
+DATABASE_FILE = os.getenv('DATABASE_FILE')
 
 app = Flask(__name__)
 
 app.secret_key = os.getenv("APP_SECRET_KEY")
 bcrypt = Bcrypt(app)
 #data_manager = JSONDataManager(JSON_STORAGE_FILE)
-data_manager = SQLiteDataManager(DB_URI)
+data_manager = SQLiteDataManager(DATABASE_FILE)
 login_manager = LoginManager(app)
 
 
@@ -97,14 +97,15 @@ def add_user():
     if request.method == 'POST':
         user_name = request.form.get('name')
         user_password = request.form.get('password')
+        email = request.form.get('email')
+
         try:
             if is_valid_password(user_password):
                 encrypted_password = bcrypt.generate_password_hash(user_password).decode('utf-8')
                 user_id = id_generator()
-                user_movie_list = []
 
                 # Call the add_user method and check if the user was added successfully
-                if data_manager.add_user(user_name, encrypted_password, user_id, user_movie_list):
+                if data_manager.add_user(user_name, encrypted_password, user_id, email):
                     return redirect(url_for('login', username=user_name))
                 else:
                     error_message = "Username already exists. Please choose a different username."
@@ -181,14 +182,14 @@ def add_movie(user_id):
 
 @app.route('/users/<user_id>/update_movie/<movie_id>', methods=['GET', 'POST'])
 @login_required
-def update_movie(user_id, old_movie_id):
+def update_movie(user_id, movie_id):
     """Updates a movie in a specific user's movie list."""
 
     user_movie_list = data_manager.get_user_movies(user_id)
 
     movie_to_update = None
     for movie in user_movie_list:
-        if movie['id'] == old_movie_id:
+        if movie['id'] == movie_id:
             movie_to_update = movie
             break
 
@@ -208,7 +209,7 @@ def update_movie(user_id, old_movie_id):
         # CREATE A NEW MOVIE ID
         new_movie_id = id_generator()
         try:
-            data_manager.update_movie(user_id, old_movie_id, new_movie_id, updated_title, updated_rating,
+            data_manager.update_movie(user_id, movie_id, new_movie_id, updated_title, updated_rating,
                                       updated_year, updated_poster_link, updated_director, updated_imdb_link)
 
             return redirect(url_for('user_movies', user_id=user_id))
@@ -228,7 +229,7 @@ def update_movie(user_id, old_movie_id):
             print(f"Error: {str(e)}")
             return render_template('general_error.html', error_message=error_message)
 
-    return render_template('update_movie.html', movie_id=old_movie_id, user_id=user_id, movie=movie_to_update)
+    return render_template('update_movie.html', movie_id=movie_id, user_id=user_id, movie=movie_to_update)
 
 
 @app.route('/users/<user_id>/delete_movie/<movie_id>', methods=['GET', 'POST'])
@@ -312,7 +313,7 @@ def delete_user(user_id):
                 for user in user_data:
                     if bcrypt.check_password_hash(user['password'], user_password):
                         data_manager.delete_user(user_id)
-                return redirect(url_for('home'))
+                        return redirect(url_for('home'))
 
             except ValueError as e:
                 error_message = str(e)
@@ -323,9 +324,9 @@ def delete_user(user_id):
 
         else:
             error_message = 'Passwords need to match'
-            return render_template('delete_movie.html',error_message=error_message)
+            return render_template('delete_user.html',error_message=error_message)
 
-    return render_template('delete_movie.html')
+    return render_template('delete_user.html')
 
 
 @app.route('/login', methods=['GET', 'POST'])

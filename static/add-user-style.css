@@ -22,7 +22,7 @@
   width: 200px;
 }
 
-.enter-user-box input[type="text"], .enter-user-box input[type="password"] {
+.enter-user-box input[type="text"], .enter-user-box input[type="password"], .enter-user-box input[type="email"] {
   padding: 5px;
   font-size: 16px;
   border-radius: 5px;

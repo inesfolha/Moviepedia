@@ -15,7 +15,9 @@
     <div class="add-user-box">
             <div class="enter-user-box">
                 <form method="POST">
-                        <label for="name"> Name:</label>
+                        <label for="email"> Email:</label>
+                        <input type="text" name="email" id="email" value="{{ email }}" required><br>
+                        <label for="name"> Username:</label>
                         <input type="text" name="name" id="name" value="{{ username }}" required><br>
                         <label for="password"> Password:</label>
                         <input type="password" name="password" id="password" required><button type="submit"> Add </button> <br>
