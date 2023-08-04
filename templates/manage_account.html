@@ -2,33 +2,29 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title> Manage User</title>
-     <link rel="stylesheet" href="/static/general-style.css">
-
+    <title>Manage User</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='general-style.css') }}">
 </head>
 <body>
 <div class="title">
-    <h1> Manage Account </h1>
+    <h1>Manage Account</h1>
 </div>
 <div class="buttons-container">
-
-    <form action="{{ url_for('delete_user', user_id=user_id) }}">
-        <button type="submit"> Delete Account  </button>
+    <form action="{{ url_for('user_bp.delete_user', user_id=user_id) }}" method="GET">
+        <button type="submit">Delete Account</button>
     </form>
 
-    <form action="{{ url_for('change_password', user_id=user_id) }}">
-        <button type="submit"> Change Password  </button>
+    <form action="{{ url_for('user_bp.change_password', user_id=user_id) }}" method="GET">
+        <button type="submit">Change Password</button>
     </form>
 
-    <a href="{{ url_for('logout') }}">
-        <button> Logout </button></a>
+    <a href="{{ url_for('user_bp.logout') }}">
+        <button>Logout</button>
+    </a>
 
-    <a href="{{ url_for('user_movies', user_id=user_id) }}">
-            <button> Back to my Movies</button>
-        </a>
+    <a href="{{ url_for('movie_bp.user_movies', user_id=user_id) }}">
+        <button>Back to my Movies</button>
+    </a>
 </div>
-
-
-
 </body>
 </html>

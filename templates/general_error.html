@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <title>Error</title>
-    <link rel="stylesheet" href="/static/general-style.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='general-style.css') }}">
 </head>
 <body>
 <div class="title">
-    <h1> Error </h1>
+    <h1>Error</h1>
 </div>
 
-<p> {{error_message}} </p>
+<p>{{ error_message }}</p>
 
 <div class="buttons-container">
-   <a href="{{ url_for('home') }}">
+    <a href="{{ url_for('user_bp.home') }}">
         <button class="top-right-button">Back to Homepage</button>
     </a>
 </div>

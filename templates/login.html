@@ -2,40 +2,40 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>login </title>
-    <link rel="stylesheet" href="/static/general-style.css">
-    <link rel="stylesheet" href="/static/add-user-style.css">
+    <title>Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='general-style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='add-user-style.css') }}">
 </head>
 <body>
 
 <div class="title">
-    <h1> Login </h1>
+    <h1>Login</h1>
 </div>
 
-    <div class="add-user-box">
-            <div class="enter-user-box">
-                <form method="POST">
-                        <label for="username"> Username:</label>
-                        <input type="text" name="username" id="username" value="{% if request.args.get('username') %}{{ request.args.get('username') }}{% endif %}" required><br>
-                        <label for="password"> Password:</label>
-                        <input type="password" name="password" id="password" required><button type="submit"> Login </button> <br>
-                </form>
-                <br>{{error_message}}
-            </div>
+<div class="add-user-box">
+    <div class="enter-user-box">
+        <form method="POST">
+            <label for="username">Username:</label>
+            <input type="text" name="username" id="username" value="{% if request.args.get('username') %}{{ request.args.get('username') }}{% endif %}" required><br>
+            <label for="password">Password:</label>
+            <input type="password" name="password" id="password" required><button type="submit">Login</button> <br>
+        </form>
+        <br>{{error_message}}
     </div>
+</div>
 
- <div class="button-container">
-        <a href="{{ url_for('home') }}">
-            <button class="bottom-right-button">Back to Homepage</button>
-        </a>
+<div class="button-container">
+    <a href="{{ url_for('user_bp.home') }}">
+        <button class="bottom-right-button">Back to Homepage</button>
+    </a>
 
-        <a href="{{ url_for('list_users') }}">
-            <button class="bottom-right-button"> All users</button>
-        </a>
+    <a href="{{ url_for('user_bp.list_users') }}">
+        <button class="bottom-right-button">All users</button>
+    </a>
 
-        <a href="{{ url_for('add_user') }}">
-            <button class="bottom-right-button">New User </button>
-        </a>
-    </div>
+    <a href="{{ url_for('user_bp.add_user') }}">
+        <button class="bottom-right-button">New User</button>
+    </a>
+</div>
 </body>
 </html>

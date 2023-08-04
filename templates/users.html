@@ -2,22 +2,22 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title> Users - MovieWeb App </title>
-     <link rel="stylesheet" href="/static/general-style.css">
-    <link rel="stylesheet" href="/static/user-list-style.css">
+    <title>Users - MovieWeb App</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='general-style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='user-list-style.css') }}">
 </head>
 <body>
 <div class="title">
-    <h1> Users </h1>
+    <h1>Users</h1>
 </div>
 <div class="users-list">
     <ul>
         {% for user in users %}
             <li>
                 {% if current_user.is_authenticated and user['id'] == current_user.id %}
-                    <a href="{{ url_for('user_movies', user_id=current_user.id) }}">{{ user['name'] }}</a>
+                    <a href="{{ url_for('movie_bp.user_movies', user_id=current_user.id) }}">{{ user['name'] }}</a>
                 {% else %}
-                    <a href="{{ url_for('login', username=user['name']) }}">{{ user['name'] }}</a>
+                    <a href="{{ url_for('user_bp.login', username=user['name']) }}">{{ user['name'] }}</a>
                 {% endif %}
             </li>
         {% endfor %}
@@ -25,18 +25,18 @@
 </div>
 <div class="buttons-bar">
     <div class="buttons-container">
-        <a href="{{ url_for('add_user') }}">
-            <button>Sign up </button></a>
-
-        <a href="{{ url_for('home') }}">
-            <button> Back to Homepage </button></a>
-
+        <a href="{{ url_for('user_bp.add_user') }}">
+            <button>Sign up</button>
+        </a>
+        <a href="{{ url_for('user_bp.home') }}">
+            <button>Back to Homepage</button>
+        </a>
          {% if current_user.is_authenticated %}
-            <a href="{{ url_for('logout') }}">
+            <a href="{{ url_for('user_bp.logout') }}">
                 <button class="bottom-right-button">Logout</button>
             </a>
         {% else %}
-            <a href="{{ url_for('login') }}">
+            <a href="{{ url_for('user_bp.login') }}">
                 <button>Login</button>
             </a>
         {% endif %}
