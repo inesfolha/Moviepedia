@@ -95,4 +95,22 @@ WHERE movie_id = :movie_id
 LIMIT 1;
 """
 
+QUERY_GET_MOVIE_REVIEWS = """
+SELECT r.*, u.username, m.*
+FROM reviews r
+JOIN users u ON r.user_id = u.ID
+JOIN movies m ON r.movie_id == m.movie_id
+WHERE r.movie_id = :movie_id
+"""
 
+QUERY_CHECK_PUBLISHED_REVIEW = """
+SELECT COUNT(*) AS review_count
+FROM reviews
+WHERE user_id = :user_id AND movie_id = :movie_id
+"""
+
+QUERY_ADD_REVIEW = """
+INSERT INTO reviews (review_id, user_id, movie_id, rating, review_text, likes, publication_date)
+VALUES (:review_id, :user_id, :movie_id, :rating, :review_text, :likes_count, :publication_date);
+
+"""

@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine, text, exc
 
-from .data_manager_interface import DataManagerInterface
-from .sql_queries import (
+from data_manager_interface import DataManagerInterface
+from sql_queries import (
     QUERY_GET_ALL_USERS,
     QUERY_GET_USER_NAME_BY_ID,
     QUERY_GET_USER_MOVIES,
@@ -17,7 +17,10 @@ from .sql_queries import (
     QUERY_CHECK_EXISTING_USER,
     QUERY_DELETE_USER_MOVIES,
     QUERY_DELETE_ORPHAN_MOVIES,
-    QUERY_CHECK_EXISTING_MOVIE
+    QUERY_CHECK_EXISTING_MOVIE,
+    QUERY_GET_MOVIE_REVIEWS,
+    QUERY_CHECK_PUBLISHED_REVIEW,
+    QUERY_ADD_REVIEW,
 )
 
 
@@ -171,23 +174,23 @@ class SQLiteDataManager(DataManagerInterface):
             raise ValueError(f"User with ID {user_id} not found")
 
         params = {
-                "movie_id": new_movie_id,
-                "title": title,
-                "director": director,
-                "year": year,
-                "rating": rating,
-                "poster": poster,
-                "movie_link": movie_link,
-            }
+            "movie_id": new_movie_id,
+            "title": title,
+            "director": director,
+            "year": year,
+            "rating": rating,
+            "poster": poster,
+            "movie_link": movie_link,
+        }
         params_2 = {
-                "movie_id": new_movie_id,
-                "user_id": user_id,
-            }
+            "movie_id": new_movie_id,
+            "user_id": user_id,
+        }
 
         params_3 = {
-                "movie_id": old_movie_id,
-                "user_id": user_id,
-            }
+            "movie_id": old_movie_id,
+            "user_id": user_id,
+        }
 
         # Add new updated movie
         self._execute_query(QUERY_INSERT_MOVIE, params)
@@ -207,7 +210,7 @@ class SQLiteDataManager(DataManagerInterface):
         params = {"movie_id": movie_id}
         existing_movie = self._execute_query(QUERY_CHECK_EXISTING_MOVIE, params)
         if not existing_movie:
-            raise ValueError(f"Movie with not found")
+            raise ValueError(f"Movie not found")
 
         # Check if the user exists
         user = self.get_user_name(user_id)
@@ -265,7 +268,7 @@ class SQLiteDataManager(DataManagerInterface):
             users_data.append(user_data)
         return users_data
 
-    def update_password(self, user_id, new_password):                  #CHECKED
+    def update_password(self, user_id, new_password):  # CHECKED
         """Updates the password of a user."""
         # Check if the user exists
         user = self.get_user_name(user_id)
@@ -276,6 +279,77 @@ class SQLiteDataManager(DataManagerInterface):
         self._execute_query(QUERY_UPDATE_USER_PASSWORD, params)
         return True
 
+    def get_reviews(self, movie_id):                                   #CHECKED
+        """retrieves all the movie info and reviews for a movie with the provided ID"""
+        # Check if the movie exists
+        params = {"movie_id": movie_id}
+        existing_movie = self._execute_query(QUERY_CHECK_EXISTING_MOVIE, params)
+        if not existing_movie:
+            raise ValueError(f"Movie not found")
+
+        params = {"movie_id": movie_id}
+        movie_reviews = self._execute_query(QUERY_GET_MOVIE_REVIEWS, params)
+        return movie_reviews
+
+    def add_reviews(self, review_id, user_id, movie_id, rating, review_text, likes_count, publication_date): #CHECKED
+        """Allows the user to publish a review for a certain movie with the given ID"""
+        # Check if the movie exists
+        params = {"movie_id": movie_id}
+        existing_movie = self._execute_query(QUERY_CHECK_EXISTING_MOVIE, params)
+        if not existing_movie:
+            raise ValueError(f"Movie with not found")
+
+        # Check if the user exists
+        user = self.get_user_name(user_id)
+        if not user:
+            raise ValueError(f"User with ID {user_id} not found")
+
+        # Check if the user has a published review on that movie
+        params = {'user_id': user_id, 'movie_id': movie_id }
+        reviews_count = self._execute_query(QUERY_CHECK_PUBLISHED_REVIEW, params)[0]['review_count']
+        if reviews_count and reviews_count != 0:
+            raise ValueError("You already reviewed this movie, please edit your existing review.")
+
+        params = {
+            "review_id": review_id,
+            "user_id": user_id,
+            "movie_id": movie_id,
+            "rating": rating,
+            "review_text": review_text,
+            "likes_count": likes_count,
+            "publication_date": publication_date
+        }
+
+        self._execute_query(QUERY_ADD_REVIEW, params)
+        return True
+
+    def edit_reviews(self, user_id, movie_id):
+        # Check if the movie exists
+        params = {"movie_id": movie_id}
+        existing_movie = self._execute_query(QUERY_CHECK_EXISTING_MOVIE, params)
+        if not existing_movie:
+            raise ValueError(f"Movie with not found")
+
+        # Check if the user exists
+        user = self.get_user_name(user_id)
+        if not user:
+            raise ValueError(f"User with ID {user_id} not found")
+        pass
+
+    def delete_reviews(self, user_id, movie_id):
+        # Check if the movie exists
+        params = {"movie_id": movie_id}
+        existing_movie = self._execute_query(QUERY_CHECK_EXISTING_MOVIE, params)
+        if not existing_movie:
+            raise ValueError(f"Movie with not found")
+
+        # Check if the user exists
+        user = self.get_user_name(user_id)
+        if not user:
+            raise ValueError(f"User with ID {user_id} not found")
+
+        pass
+
     def close_connection(self):
         """
         Close the connection to the database explicitly when it is no longer needed.
@@ -283,22 +357,6 @@ class SQLiteDataManager(DataManagerInterface):
         self._engine.dispose()
 
 
-file_name = r'C:\Users\inesf\PycharmProjects\movie_web_app(phase5)\movie_web_app\data\movie_web_app.sqlite3'
-data_manager = SQLiteDataManager(file_name)
-# print(data_manager.get_all_users())  # Works
-# print('should be Bob: ', data_manager.get_user_name('deadee'))  # Works
-# print('bob movies:',data_manager.get_user_movies('deadee'))  # Works
-# print(data_manager.add_movie('deadee', "26983540-d74a-4aba-aa17-259f9b2e2208", "Spider-Man: Across the Spider-Verse", 9.1,
-# 2023, "https://m.media-amazon.com/images/M/MV5BNzQ1ODUzYjktMzRiMS00ODNiLWI4NzQtOTRiN2VlNTNmODFjXkEyXkFqcGdeQXVyMTkxNjUyNQ@@._V1_SX300.jpg"
-# , "Joaquim Dos Santos, Kemp Powers, Justin K. Thompson", "https://www.imdb.com/title/tt9362722/")) # WORKS
-# print(data_manager.add_user('leaf', 'superhashedpassword', 'supermegauuid', 'email@leaf.com')) # WORKS
-# print(data_manager.update_movie('deadee', "26983540-d74a-4aba-aa17-259f9b2e2208","new movie id test", "Spider-Man: Across the Spider-Verse", 9.1,  #WORKS
-# 2023, "https://m.media-amazon.com/images/M/MV5BNzQ1ODUzYjktMzRiMS00ODNiLWI4NzQtOTRiN2VlNTNmODFjXkEyXkFqcGdeQXVyMTkxNjUyNQ@@._V1_SX300.jpg", "Joaquim Dos Santos, Kemp Powers, Justin K. Thompson", "https://www.imdb.com/title/tt9362722/"))
-# print(data_manager.delete_movie('deadee', "new movie id test")) # WORKS
-# print(data_manager.add_user('Ines', 'encrypted_password', 'user_id', 'email')) #WORKS
-# print(data_manager.get_user_data()) # WORKS
-# print(data_manager.delete_user('user_id')) #WORKS
-#data_manager.add_movie('supermegauuid', 'movie_id', 'title', 'rating', 'year', 'poster', 'director', 'movie_link')
-# data_manager.delete_user('supermegauuid')
-#print(data_manager.add_user('usertest', 'encrypted_password', 'user_id', 'email'))
-#print(data_manager.update_password('user_id', 'newand changedpassword')) #WORKS
+db = SQLiteDataManager(r'C:\Users\inesf\PycharmProjects\movie_web_app(phase5)\movie_web_app\data\movie_web_app.sqlite3')
+#print(db.get_reviews("ec5c3b2b-4ff7-4f99-abc4-132597767e3c"))  # WORKS
+#print(db.add_reviews('last_test_review', '07bc496f-27e5-49a9-8f61-a460039da3ad', 'dfd1964b-6264-4f06-a894-201cb23771d5', 9, 'Solid 9 NO QUESTION ', 0 , '05-08-2023' )) #WORKS
