@@ -19,6 +19,7 @@
         {% endif %}
     {% endwith %}
 
+<!-- MOVIE INFO -->
 <div class="movie-details-box">
     <div class="movie-details">
         <div> {{ movie['rating'] }} </div>
@@ -30,21 +31,41 @@
 <div class="reviews-section">
     <h2 >Reviews </h2>
     <ul class="reviews-list">
+
+        <!-- REVIEW INFO -->
         {% for review in reviews %}
         <li>
             <div class="review">
-                <div class="review-author">{{ review['username'] }}</div>
-                <div class="review-rating"> {{ review['rating'] }}</div>
-                <div class="review-title">{{ review['review_title'] }}</div>
+                <div class="review-author">Author: {{ review['username'] }}</div>
+                <div class="review-rating">Author's rating for the movie: {{ review['rating'] }} </div>
+                <div class="review-title">{{ review['review_title'] }} - {{ review['likes'] }} likes </div>
                 <div class="review-text">{{ review['review_text'] }}</div>
                 <div class="review-date">{{ review['publication_date'] }} - {% if review['edit_date'] %}
-        (edited at {{ review['edit_date']}})
-    {% endif %} </div>
-                <div class="review-actions">
-                    <a href="{{ url_for('review_bp.edit_review', user_id=review['user_id'], movie_id=movie['movie_id'], review_id=review['review_id']) }}">Edit</a>
-                    <form action="{{ url_for('review_bp.delete_review', user_id=review['user_id'], movie_id=movie['movie_id'], review_id=review['review_id']) }}" method="post" onsubmit="return confirm('Are you sure you want to delete this review?')">
-                        <button class="" type="submit">Delete</button>
+        (edited at {{ review['edit_date']}}) {% endif %}
+                </div>
+
+
+                <!-- LIKE/UNLIKE BUTTON -->
+                {% if current_user.get_id() not in likes[review['review_id']] %}
+                    <form action="{{ url_for('review_bp.like_review', user_id=current_user.get_id(), review_id=review['review_id'], movie_id=review['movie_id']) }}" method="post">
+                        <button class="like-button" type="submit">Like</button>
                     </form>
+                {% else %}
+                    <form action="{{ url_for('review_bp.like_review', user_id=current_user.get_id(), review_id=review['review_id'], movie_id=review['movie_id']) }}" method="post">
+                        <button class="unlike-button" type="submit">Unlike</button>
+                    </form>
+                {% endif %}
+
+                <!-- EDIT/DELETE BUTTON -->
+                <div class="review-actions">
+                    {% if current_user.get_id() == review['user_id'] %}
+                        <form action="{{ url_for('review_bp.edit_review', user_id=review['user_id'], movie_id=movie['movie_id'], review_id=review['review_id']) }}">
+                            <button class="" type="submit">Edit</button>
+                        </form>
+                        <form action="{{ url_for('review_bp.delete_review', user_id=review['user_id'], movie_id=movie['movie_id'], review_id=review['review_id']) }}" method="post" onsubmit="return confirm('Are you sure you want to delete this review?')">
+                            <button class="" type="submit">Delete</button>
+                        </form>
+                    {% endif %}
                 </div>
                 </div>
         </li>
@@ -53,8 +74,12 @@
 </div>
 
 <div class="button-container">
+    <a href="{{ url_for('movie_bp.user_movies', user_id=current_user.get_id()) }}">
+        <button class="bottom-right-button">Back to my Movies</button>
+    </a>
+
     <a href="{{ url_for('review_bp.add_review', user_id=current_user.get_id(), movie_id=movie['movie_id']) }}">
-        <button class="bottom-right-button">Add Review</button>
+        <button class="bottom-right-button"> Add Review</button>
     </a>
     <a href="{{ url_for('user_bp.home') }}">
         <button class="bottom-right-button">Back to Homepage</button>

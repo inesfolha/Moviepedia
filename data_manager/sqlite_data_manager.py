@@ -31,6 +31,7 @@ from .sql_queries import (
     QUERY_DECREMENT_LIKES,
     QUERY_GET_MOVIE_DETAILS,
     QUERY_GET_REVIEW_DETAILS,
+    QUERY_GET_REVIEW_LIKES,
 
 )
 
@@ -290,7 +291,7 @@ class SQLiteDataManager(DataManagerInterface):
         self._execute_query(QUERY_UPDATE_USER_PASSWORD, params)
         return True
 
-    def get_reviews(self, movie_id):  # CHECKED
+    def get_all_movie_reviews(self, movie_id):  # CHECKED
         """retrieves all the movie info and reviews for a movie with the provided ID"""
         # Check if the movie exists
         params = {"movie_id": movie_id}
@@ -398,7 +399,7 @@ class SQLiteDataManager(DataManagerInterface):
         params = {"user_id": user_id, "review_id": review_id}
         existing_like = self._execute_query(QUERY_CHECK_EXISTING_LIKE, params)
         if existing_like:
-            self.unlike_review(user_id, review_id)
+            raise ValueError('Movie already liked')
 
         # add the like to the user_likes table (user_id, review_id)
         self._execute_query(QUERY_ADD_LIKE, params)
@@ -443,10 +444,25 @@ class SQLiteDataManager(DataManagerInterface):
         else:
             raise ValueError(f"Review not found")
 
+    def movie_review_likes(self, movie_id):
+        """retrieves a list of users who have liked reviews for a given movie_id"""
+        params = {'movie_id': movie_id}
+        likes = self._execute_query(QUERY_GET_REVIEW_LIKES, params)
+        review_likes = {}
+        for like in likes:
+            review_id = like['review_id']
+            liked_user_id = like['liked_user_id']
+            if review_id not in review_likes:
+                review_likes[review_id] = []
+            review_likes[review_id].append(liked_user_id)
+
+        return review_likes
+
     def close_connection(self):
         """
         Close the connection to the database explicitly when it is no longer needed.
         """
         self._engine.dispose()
 
-
+# db = SQLiteDataManager(r'C:\Users\inesf\PycharmProjects\movie_web_app(phase5)\movie_web_app\data\movie_web_app.sqlite3')
+# print(db.movie_review_likes('7c3de1c2-3900-4403-b46d-7f47dc68eba9'))

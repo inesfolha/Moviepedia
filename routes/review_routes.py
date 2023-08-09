@@ -26,8 +26,9 @@ def movie_details(movie_id):
     error_messages = get_flashed_messages(category_filter=['error'])
 
     movie = data_manager.get_movie_details(movie_id)
-    reviews = data_manager.get_reviews(movie_id)
-    return render_template('movie_details.html', movie=movie, reviews=reviews,
+    reviews = data_manager.get_all_movie_reviews(movie_id)
+    movie_review_likes = data_manager.movie_review_likes(movie_id)
+    return render_template('movie_details.html', movie=movie, reviews=reviews, likes=movie_review_likes,
                            error_messages=error_messages, success_messages=success_messages)
 
 
@@ -52,13 +53,17 @@ def add_review(user_id, movie_id):
     return render_template('add_review.html', movie_id=movie_id, user_id=user_id)
 
 
-@review_bp.route('/add_review', methods=['POST'])
+@review_bp.route('/like_review/<user_id>/<review_id>/<movie_id>', methods=['POST'])
 @login_required
 def like_review(user_id, review_id, movie_id):
     """Loads the add review template and allows the user to publish a review"""
     if request.method == 'POST':
-        data_manager.like_review(user_id, review_id)
-        return redirect(url_for('review_bp.movie_details', movie_id=movie_id))
+        try:
+            data_manager.like_review(user_id, review_id)
+            return redirect(url_for('review_bp.movie_details', movie_id=movie_id))
+        except ValueError:
+            data_manager.unlike_review(user_id, review_id)
+            return redirect(url_for('review_bp.movie_details', movie_id=movie_id))
 
 
 @review_bp.route('/edit_review/<user_id>/<movie_id>/<review_id>', methods=['GET', 'POST'])

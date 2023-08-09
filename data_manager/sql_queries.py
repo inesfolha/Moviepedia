@@ -169,3 +169,17 @@ SELECT * FROM movies WHERE movie_id = :movie_id
 
 QUERY_GET_REVIEW_DETAILS = """
 SELECT * FROM reviews WHERE review_id = :review_id"""
+
+QUERY_GET_REVIEW_LIKES = """
+SELECT
+    r.review_id,
+    ul.user_id AS liked_user_id
+FROM
+    reviews AS r
+LEFT JOIN
+    user_likes AS ul ON r.review_id = ul.review_id
+WHERE
+    r.movie_id = :movie_id
+ORDER BY
+    r.review_id;
+"""
