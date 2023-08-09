@@ -96,7 +96,7 @@ LIMIT 1;
 """
 
 QUERY_GET_MOVIE_REVIEWS = """
-SELECT r.*, u.username, m.*
+SELECT r.*, u.username, m.title
 FROM reviews r
 JOIN users u ON r.user_id = u.ID
 JOIN movies m ON r.movie_id == m.movie_id
@@ -114,3 +114,58 @@ INSERT INTO reviews (review_id, user_id, movie_id, rating, review_text, likes, p
 VALUES (:review_id, :user_id, :movie_id, :rating, :review_text, :likes_count, :publication_date);
 
 """
+
+QUERY_EDIT_REVIEW = """
+UPDATE reviews
+SET review_title = :review_title,
+    review_text = :review_text,
+    edit_date = :edit_date,
+    rating = :rating
+WHERE review_id = :review_id;
+"""
+
+QUERY_DELETE_REVIEW = """
+DELETE FROM reviews
+WHERE review_id = :review_id;
+"""
+
+QUERY_CHECK_REVIEW = """
+SELECT COUNT(*) AS review_count
+FROM reviews
+WHERE review_id = :review_id;
+"""
+
+QUERY_CHECK_EXISTING_LIKE = """
+SELECT 1
+FROM user_likes
+WHERE user_id = :user_id AND review_id = :review_id;
+"""
+
+QUERY_ADD_LIKE = """
+INSERT INTO user_likes (user_id, review_id)
+VALUES (:user_id, :review_id);
+"""
+
+QUERY_REMOVE_LIKE = """
+DELETE FROM user_likes
+WHERE user_id = :user_id AND review_id = :review_id;
+"""
+
+QUERY_INCREMENT_LIKES = """
+UPDATE reviews
+SET likes = likes + 1
+WHERE review_id = :review_id;
+"""
+
+QUERY_DECREMENT_LIKES = """
+UPDATE reviews
+SET likes = likes - 1
+WHERE review_id = :review_id;
+"""
+
+QUERY_GET_MOVIE_DETAILS = """
+SELECT * FROM movies WHERE movie_id = :movie_id
+"""
+
+QUERY_GET_REVIEW_DETAILS = """
+SELECT * FROM reviews WHERE review_id = :review_id"""

@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine, text, exc
 
-from data_manager_interface import DataManagerInterface
-from sql_queries import (
+from .data_manager_interface import DataManagerInterface
+from .sql_queries import (
     QUERY_GET_ALL_USERS,
     QUERY_GET_USER_NAME_BY_ID,
     QUERY_GET_USER_MOVIES,
@@ -21,6 +21,17 @@ from sql_queries import (
     QUERY_GET_MOVIE_REVIEWS,
     QUERY_CHECK_PUBLISHED_REVIEW,
     QUERY_ADD_REVIEW,
+    QUERY_EDIT_REVIEW,
+    QUERY_DELETE_REVIEW,
+    QUERY_CHECK_REVIEW,
+    QUERY_CHECK_EXISTING_LIKE,
+    QUERY_ADD_LIKE,
+    QUERY_REMOVE_LIKE,
+    QUERY_INCREMENT_LIKES,
+    QUERY_DECREMENT_LIKES,
+    QUERY_GET_MOVIE_DETAILS,
+    QUERY_GET_REVIEW_DETAILS,
+
 )
 
 
@@ -279,7 +290,7 @@ class SQLiteDataManager(DataManagerInterface):
         self._execute_query(QUERY_UPDATE_USER_PASSWORD, params)
         return True
 
-    def get_reviews(self, movie_id):                                   #CHECKED
+    def get_reviews(self, movie_id):  # CHECKED
         """retrieves all the movie info and reviews for a movie with the provided ID"""
         # Check if the movie exists
         params = {"movie_id": movie_id}
@@ -289,9 +300,11 @@ class SQLiteDataManager(DataManagerInterface):
 
         params = {"movie_id": movie_id}
         movie_reviews = self._execute_query(QUERY_GET_MOVIE_REVIEWS, params)
+
         return movie_reviews
 
-    def add_reviews(self, review_id, user_id, movie_id, rating, review_text, likes_count, publication_date): #CHECKED
+    def add_reviews(self, review_id, user_id, movie_id, rating, review_text, review_title, likes_count,
+                    publication_date):  # CHECKED
         """Allows the user to publish a review for a certain movie with the given ID"""
         # Check if the movie exists
         params = {"movie_id": movie_id}
@@ -305,7 +318,7 @@ class SQLiteDataManager(DataManagerInterface):
             raise ValueError(f"User with ID {user_id} not found")
 
         # Check if the user has a published review on that movie
-        params = {'user_id': user_id, 'movie_id': movie_id }
+        params = {'user_id': user_id, 'movie_id': movie_id}
         reviews_count = self._execute_query(QUERY_CHECK_PUBLISHED_REVIEW, params)[0]['review_count']
         if reviews_count and reviews_count != 0:
             raise ValueError("You already reviewed this movie, please edit your existing review.")
@@ -315,6 +328,7 @@ class SQLiteDataManager(DataManagerInterface):
             "user_id": user_id,
             "movie_id": movie_id,
             "rating": rating,
+            "review_title": review_title,
             "review_text": review_text,
             "likes_count": likes_count,
             "publication_date": publication_date
@@ -323,20 +337,7 @@ class SQLiteDataManager(DataManagerInterface):
         self._execute_query(QUERY_ADD_REVIEW, params)
         return True
 
-    def edit_reviews(self, user_id, movie_id):
-        # Check if the movie exists
-        params = {"movie_id": movie_id}
-        existing_movie = self._execute_query(QUERY_CHECK_EXISTING_MOVIE, params)
-        if not existing_movie:
-            raise ValueError(f"Movie with not found")
-
-        # Check if the user exists
-        user = self.get_user_name(user_id)
-        if not user:
-            raise ValueError(f"User with ID {user_id} not found")
-        pass
-
-    def delete_reviews(self, user_id, movie_id):
+    def edit_reviews(self, review_id, user_id, movie_id, rating, review_text, review_title, edit_date):  # CHECKED
         # Check if the movie exists
         params = {"movie_id": movie_id}
         existing_movie = self._execute_query(QUERY_CHECK_EXISTING_MOVIE, params)
@@ -348,7 +349,99 @@ class SQLiteDataManager(DataManagerInterface):
         if not user:
             raise ValueError(f"User with ID {user_id} not found")
 
-        pass
+        params = {
+            "review_id": review_id,
+            "review_title": review_title,
+            "review_text": review_text,
+            "edit_date": edit_date,
+            "rating": rating,
+        }
+
+        self._execute_query(QUERY_EDIT_REVIEW, params)
+        return True
+
+    def delete_reviews(self, user_id, movie_id, review_id):  # CHECKED
+        # Check if the movie exists
+        params = {"movie_id": movie_id}
+        existing_movie = self._execute_query(QUERY_CHECK_EXISTING_MOVIE, params)
+        if not existing_movie:
+            raise ValueError(f"Movie with not found")
+
+        # Check if the user exists
+        user = self.get_user_name(user_id)
+        if not user:
+            raise ValueError(f"User with ID {user_id} not found")
+
+        # Check if the review exists
+        params = {"review_id": review_id}
+        existing_review = self._execute_query(QUERY_CHECK_REVIEW, params)
+        if not existing_review:
+            raise ValueError(f"Review not found with ID {review_id}")
+
+        # Delete the review
+        self._execute_query(QUERY_DELETE_REVIEW, params)
+        return True
+
+    def like_review(self, user_id, review_id):
+        # Check if the user exists
+        user = self.get_user_name(user_id)
+        if not user:
+            raise ValueError(f"User with ID {user_id} not found")
+
+        # Check if the review exists
+        params = {"review_id": review_id}
+        existing_review = self._execute_query(QUERY_CHECK_REVIEW, params)
+        if not existing_review:
+            raise ValueError(f"Review not found with ID {review_id}")
+
+        # Check if this user_id already has a like on that review_id
+        params = {"user_id": user_id, "review_id": review_id}
+        existing_like = self._execute_query(QUERY_CHECK_EXISTING_LIKE, params)
+        if existing_like:
+            self.unlike_review(user_id, review_id)
+
+        # add the like to the user_likes table (user_id, review_id)
+        self._execute_query(QUERY_ADD_LIKE, params)
+        # increase the likes count (likes) integer on the reviews table for that review_id
+        self._execute_query(QUERY_INCREMENT_LIKES, params)
+        return True
+
+    def unlike_review(self, user_id, review_id):
+        # Check if the user exists
+        user = self.get_user_name(user_id)
+        if not user:
+            raise ValueError(f"User with ID {user_id} not found")
+
+        # Check if the review exists
+        params = {"review_id": review_id}
+        existing_review = self._execute_query(QUERY_CHECK_REVIEW, params)
+        if not existing_review:
+            raise ValueError(f"Review not found with ID {review_id}")
+
+        # remove the row like from the user_likes table (user_id, review_id)
+        params = {"user_id": user_id, "review_id": review_id}
+        self._execute_query(QUERY_REMOVE_LIKE, params)
+        # decrease the likes count (likes) integer on the reviews table for that review_id
+        self._execute_query(QUERY_DECREMENT_LIKES, params)
+        return True
+
+    def get_movie_details(self, movie_id):
+        """Retrieves a movie by its ID from the database."""
+        params = {"movie_id": movie_id}
+        movie = self._execute_query(QUERY_GET_MOVIE_DETAILS, params)
+        if movie:
+            return movie[0]
+        else:
+            raise ValueError(f"Movie not found")
+
+    def get_review_info(self, review_id):
+        """Retrieves a review by its ID from the database."""
+        params = {"review_id": review_id}
+        review = self._execute_query(QUERY_GET_REVIEW_DETAILS, params)
+        if review:
+            return review[0]
+        else:
+            raise ValueError(f"Review not found")
 
     def close_connection(self):
         """
@@ -357,6 +450,3 @@ class SQLiteDataManager(DataManagerInterface):
         self._engine.dispose()
 
 
-db = SQLiteDataManager(r'C:\Users\inesf\PycharmProjects\movie_web_app(phase5)\movie_web_app\data\movie_web_app.sqlite3')
-#print(db.get_reviews("ec5c3b2b-4ff7-4f99-abc4-132597767e3c"))  # WORKS
-#print(db.add_reviews('last_test_review', '07bc496f-27e5-49a9-8f61-a460039da3ad', 'dfd1964b-6264-4f06-a894-201cb23771d5', 9, 'Solid 9 NO QUESTION ', 0 , '05-08-2023' )) #WORKS

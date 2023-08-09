@@ -8,9 +8,9 @@ from flask_login import LoginManager
 from movie_web_app.data_manager.user import User
 from movie_web_app.routes.movie_routes import movie_bp
 from movie_web_app.routes.user_routes import user_bp
-
+from movie_web_app.routes.review_routes import review_bp
 from helpers.helper_functions import bcrypt
-from data_manager.sqlite_data_manager import SQLiteDataManager
+from movie_web_app.data_manager.sqlite_data_manager import SQLiteDataManager
 
 load_dotenv()
 
@@ -26,6 +26,7 @@ data_manager = SQLiteDataManager(DATABASE_FILE)
 # Register the blueprints
 app.register_blueprint(user_bp)
 app.register_blueprint(movie_bp)
+app.register_blueprint(review_bp)
 
 
 @login_manager.user_loader

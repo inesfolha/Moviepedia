@@ -19,6 +19,9 @@
             <li>
                 <div class="movie">
                     <div class="movie-buttons">
+                        <a href="{{ url_for('review_bp.movie_details', movie_id=movie['id']) }}">
+                            <button type="button" class="update-button">Details</button>
+                        </a>
                         <a href="{{ url_for('movie_bp.update_movie', user_id=user_id, movie_id=movie['id']) }}">
                             <button type="button" class="update-button">Edit</button>
                         </a>

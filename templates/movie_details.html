@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Movie Details</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='general-style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='movie-details-style.css') }}">
+</head>
+<body>
+
+<div class="movie-details-title">
+    <h1>{{ movie['title'] }} ({{ movie['year'] }})</h1>
+</div>
+ {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="flash-message">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+<div class="movie-details-box">
+    <div class="movie-details">
+        <div> {{ movie['rating'] }} </div>
+        <img src="{{ movie['poster'] }}" alt="Movie Poster"/>
+        <div> Director: {{ movie['director'] }}</div>
+    </div>
+</div>
+
+<div class="reviews-section">
+    <h2 >Reviews </h2>
+    <ul class="reviews-list">
+        {% for review in reviews %}
+        <li>
+            <div class="review">
+                <div class="review-author">{{ review['username'] }}</div>
+                <div class="review-rating"> {{ review['rating'] }}</div>
+                <div class="review-title">{{ review['review_title'] }}</div>
+                <div class="review-text">{{ review['review_text'] }}</div>
+                <div class="review-date">{{ review['publication_date'] }} - {% if review['edit_date'] %}
+        (edited at {{ review['edit_date']}})
+    {% endif %} </div>
+                <div class="review-actions">
+                    <a href="{{ url_for('review_bp.edit_review', user_id=review['user_id'], movie_id=movie['movie_id'], review_id=review['review_id']) }}">Edit</a>
+                    <form action="{{ url_for('review_bp.delete_review', user_id=review['user_id'], movie_id=movie['movie_id'], review_id=review['review_id']) }}" method="post" onsubmit="return confirm('Are you sure you want to delete this review?')">
+                        <button class="" type="submit">Delete</button>
+                    </form>
+                </div>
+                </div>
+        </li>
+            {% endfor %}
+    </ul>
+</div>
+
+<div class="button-container">
+    <a href="{{ url_for('review_bp.add_review', user_id=current_user.get_id(), movie_id=movie['movie_id']) }}">
+        <button class="bottom-right-button">Add Review</button>
+    </a>
+    <a href="{{ url_for('user_bp.home') }}">
+        <button class="bottom-right-button">Back to Homepage</button>
+    </a>
+</div>
+
+</body>
+</html>
