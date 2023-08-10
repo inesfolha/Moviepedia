@@ -24,59 +24,72 @@
     <div class="movie-details">
         <h2 class ="second_title" id="details"> Movie Details </h2>
         <img src="{{ movie['poster'] }}" alt="Movie Poster"/>
-        <div class ="movie_detail">({{ movie['year'] }})</div>
-        <div class ="movie_detail"> {{ movie['rating'] }} </div>
-
-        <div class ="movie_detail"> Director: {{ movie['director'] }}</div>
+        <div class="movie_info">
+            <div class ="movie_detail">Released: {{ movie['year'] }}</div>
+            <div class ="movie_detail">Rating: {{ movie['rating'] }} </div>
+            <div class ="movie_detail"> Director: {{ movie['director'] }}</div>
+        </div>
     </div>
 </div>
 
 
 
 <div class="reviews-section">
-
     <ul class="reviews-list">
         <h2 class ="second_title" id="review">  Reviews </h2>
         <!-- REVIEW INFO -->
         {% for review in reviews %}
         <li>
             <div class="review">
-                <div class="review-author"> Author: {{ review['username'] }} </div><br>
-                <div class="review-rating"> Author's rating for the movie: {{ review['rating'] }} </div><br>
-                <div class="review-title"> {{ review['review_title'] }} - {{ review['likes'] }} likes </div><br>
+                <div class="review-author"> {{ review['username'] }}  </div><br>
+                <div class="review-title"> {{ review['review_title'] }} - my rating: {{ review['rating'] }}</div><br>
                 <div class="review-text"> {{ review['review_text'] }}</div><br>
-                <div class="review-date"> {{ review['publication_date'] }} - {% if review['edit_date'] %}
-        (edited at {{ review['edit_date']}}) {% endif %}<br>
-                </div>
+                <div class="review-date"> {{ review['publication_date'] }}  {% if review['edit_date'] %}
+                    (edited at {{ review['edit_date']}}) {% endif %}<br></div>
 
 
-                <!-- LIKE/UNLIKE BUTTON -->
-                {% if current_user.get_id() not in likes[review['review_id']] %}
-                    <form action="{{ url_for('review_bp.like_review', user_id=current_user.get_id(), review_id=review['review_id'], movie_id=review['movie_id']) }}" method="post">
-                        <button class="like-button" type="submit">Like</button>
-                    </form>
-                {% else %}
-                    <form action="{{ url_for('review_bp.like_review', user_id=current_user.get_id(), review_id=review['review_id'], movie_id=review['movie_id']) }}" method="post">
-                        <button class="unlike-button" type="submit">Unlike</button>
-                    </form>
-                {% endif %}
-
-                <!-- EDIT/DELETE BUTTON -->
-                <div class="review-actions">
-                    {% if current_user.get_id() == review['user_id'] %}
+                        <div class="edit-delete-container">
+                        <!-- EDIT/DELETE BUTTON -->
+                        {% if current_user.get_id() == review['user_id'] %}
                         <form action="{{ url_for('review_bp.edit_review', user_id=review['user_id'], movie_id=movie['movie_id'], review_id=review['review_id']) }}">
-                            <button class="" type="submit">Edit</button>
+                            <button class="edit-button" type="submit">Edit</button>
                         </form>
                         <form action="{{ url_for('review_bp.delete_review', user_id=review['user_id'], movie_id=movie['movie_id'], review_id=review['review_id']) }}" method="post" onsubmit="return confirm('Are you sure you want to delete this review?')">
-                            <button class="" type="submit">Delete</button>
+                            <button class="delete-button" type="submit">X</button>
                         </form>
-                    {% endif %}
-                </div>
-                </div>
-        </li>
+                        {% endif %}
+                        </div> <!-- end of edit/delete-container -->
+
+
+                        <!-- LIKE/UNLIKE BUTTON -->
+                        <div class="like-dislike-container">
+                        {% if current_user.get_id() not in likes[review['review_id']] %}
+
+                            <form action="{{ url_for('review_bp.like_review', user_id=current_user.get_id(), review_id=review['review_id'], movie_id=review['movie_id']) }}" method="post">
+                                <button class="like-button" type="submit">
+                                    <img src="{{ url_for('static', filename='like_button.png') }}" alt="Like">
+                                     <span class="button-text">Like</span>
+                                </button>
+                            </form>
+                        <div class="likes-count">{{ review['likes'] }} likes</div>
+                            {% else %}
+
+                            <form action="{{ url_for('review_bp.like_review', user_id=current_user.get_id(), review_id=review['review_id'], movie_id=review['movie_id']) }}" method="post">
+                                <button class="unlike-button" type="submit">
+                                    <img src="{{ url_for('static', filename='dislike_button.png') }}" alt="Like">
+                                    <span class="button-text">Unlike</span>
+                                </button>
+                            </form>
+                            <div class="likes-count"> {{ review['likes'] }} likes </div>
+                        {% endif %}
+                        </div> <!-- end of like/dislike-container -->
+
+            </div> <!-- Closing for class review-->
             {% endfor %}
-    </ul>
-</div>
+        </li>
+    </ul> <!-- Closing for reviews-list -->
+</div> <!-- Closing for reviews-section -->
+
 
 <div class="button-container">
     <a href="{{ url_for('movie_bp.user_movies', user_id=current_user.get_id()) }}">
