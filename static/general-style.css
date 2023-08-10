@@ -10,6 +10,31 @@ body {
   position: relative;
 }
 
+/* Add a vertical line to the left side of the page */
+body::before {
+  content: "";
+  position: fixed;
+  top: 150px;
+  bottom: 0;
+  left: 10;
+  width: 5px; /* Adjust the width of the line */
+  background-color: #1f1f2e; /* Adjust the color of the line */
+  border-radius: 5px;
+}
+
+/* Add a vertical line to the right side of the page */
+body::after {
+  content: "";
+  position: fixed;
+  top: 150px;
+  bottom: 0;
+  right: 10px;
+  width: 5px; /* Adjust the width of the line */
+  background-color: #1f1f2e; /* Adjust the color of the line */
+  border-radius: 5px;
+}
+
+
 .title {
   font-family: "Custom";
   padding: 0px 0;

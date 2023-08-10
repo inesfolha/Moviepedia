@@ -20,7 +20,7 @@
                 <div class="movie">
                     <div class="movie-buttons">
                         <a href="{{ url_for('review_bp.movie_details', movie_id=movie['id']) }}">
-                            <button type="button" class="update-button">Details</button>
+                            <button type="button" class="details-button">Details</button>
                         </a>
                         <a href="{{ url_for('movie_bp.update_movie', user_id=user_id, movie_id=movie['id']) }}">
                             <button type="button" class="update-button">Edit</button>
@@ -34,7 +34,7 @@
                         <div class="movie-rating">{{ movie['rating'] }}</div>
                         <img class="movie-poster" src={{movie['poster']}}/>
                     </a>
-                    <div class="movie-title">{{ movie['title'] }} - {{ movie['year'] }} - {{ movie['director'] }}</div>
+                    <div class="movie-title">{{ movie['title'] }} - {{ movie['year'] }} </div>
                 </div>
             </li>
             {% endfor %}

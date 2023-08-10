@@ -9,6 +9,30 @@ body {
   position: relative;
 }
 
+/* Add a vertical line to the left side of the page */
+body::before {
+  content: "";
+  position: absolute;
+  top: 110px;
+  bottom: 0;
+  left: 10;
+  width: 5px; /* Adjust the width of the line */
+  background-color: #1f1f2e; /* Adjust the color of the line */
+  border-radius: 5px;
+}
+
+/* Add a vertical line to the right side of the page */
+body::after {
+  content: "";
+  position: absolute;
+  top: 110px;
+  bottom: 0;
+  right: 2px;
+  width: 5px; /* Adjust the width of the line */
+  background-color: #1f1f2e; /* Adjust the color of the line */
+  border-radius: 5px;
+}
+
 .list-movies-title {
   font-family: "Custom";
   padding: 0px 0;
@@ -76,10 +100,10 @@ body {
   right: 9px;
 }
 
-
+.details-button,
 .update-button,
 .delete-link {
-  background-color: #b3b3cc;
+  background-color: #34344c;
   opacity: 0.85;
   color: white;
   padding: 3px 6px;
@@ -90,9 +114,18 @@ body {
   cursor: pointer;
 }
 
+
+.details-button:hover,
 .update-button:hover,
 .delete-link:hover {
   background-color: #9494b8;
+}
+
+.details-button{
+margin-right: 23px;
+margin-top: 170px;
+background-color:  #34344c;
+
 }
 
 .button-container {
