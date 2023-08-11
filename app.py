@@ -9,6 +9,8 @@ from movie_web_app.data_manager.user import User
 from movie_web_app.routes.movie_routes import movie_bp
 from movie_web_app.routes.user_routes import user_bp
 from movie_web_app.routes.review_routes import review_bp
+from movie_web_app.routes.api_movie_routes import api_movies
+from movie_web_app.routes.api_user_routes import api_user
 from helpers.helper_functions import bcrypt
 from movie_web_app.data_manager.sqlite_data_manager import SQLiteDataManager
 
@@ -27,6 +29,8 @@ data_manager = SQLiteDataManager(DATABASE_FILE)
 app.register_blueprint(user_bp)
 app.register_blueprint(movie_bp)
 app.register_blueprint(review_bp)
+app.register_blueprint(api_movies, url_prefix='/api')
+app.register_blueprint(api_user, url_prefix='/api')
 
 
 @login_manager.user_loader

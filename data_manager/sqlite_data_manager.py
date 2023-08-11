@@ -486,6 +486,3 @@ class SQLiteDataManager(DataManagerInterface):
         Close the connection to the database explicitly when it is no longer needed.
         """
         self._engine.dispose()
-
-# db = SQLiteDataManager(r'C:\Users\inesf\PycharmProjects\movie_web_app(phase5)\movie_web_app\data\movie_web_app.sqlite3')
-# print(db.movie_review_likes('7c3de1c2-3900-4403-b46d-7f47dc68eba9'))
