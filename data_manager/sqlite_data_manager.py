@@ -16,7 +16,7 @@ from .sql_queries import (
     QUERY_DELETE_MOVIE,
     QUERY_CHECK_EXISTING_USER,
     QUERY_DELETE_USER_MOVIES,
-    QUERY_DELETE_ORPHAN_MOVIES,
+    QUERY_DELETE_ALIAS_ORPHAN_MOVIES,
     QUERY_CHECK_EXISTING_MOVIE,
     QUERY_GET_MOVIE_REVIEWS,
     QUERY_CHECK_PUBLISHED_REVIEW,
@@ -32,7 +32,10 @@ from .sql_queries import (
     QUERY_GET_MOVIE_DETAILS,
     QUERY_GET_REVIEW_DETAILS,
     QUERY_GET_REVIEW_LIKES,
-
+    QUERY_UPDATE_USER_MOVIE,
+    QUERY_FIND_ORIGINAL_MOVIE_ID,
+    QUERY_CHECK_USER_MOVIE,
+    QUERY_UPDATE_MOVIE_BY_USER_UPDATED_ID,
 )
 
 
@@ -147,7 +150,7 @@ class SQLiteDataManager(DataManagerInterface):
             self._execute_query(QUERY_INSERT_MOVIE, params)
 
         # Associate the movie with the user in the 'user_movies' table
-        params = {"user_id": user_id, "movie_id": movie_id}
+        params = {"user_id": user_id, "movie_id": movie_id, "user_updated_movie_id": movie_id}
         self._execute_query(QUERY_INSERT_USER_MOVIE, params)
         return True
 
@@ -185,38 +188,53 @@ class SQLiteDataManager(DataManagerInterface):
         if not user:
             raise ValueError(f"User with ID {user_id} not found")
 
-        params = {
-            "movie_id": new_movie_id,
-            "title": title,
-            "director": director,
-            "year": year,
-            "rating": rating,
-            "poster": poster,
-            "movie_link": movie_link,
+        # Check if movie_id = user_updated_movie_id from user_movies table
+        params_check = {
+            "user_id": user_id,
+            "movie_id": old_movie_id
         }
-        params_2 = {
-            "movie_id": new_movie_id,
+        user_updated_movie = self._execute_query(QUERY_CHECK_USER_MOVIE, params_check)
+        if len(user_updated_movie) > 0:
+            # The user is editing the movie for the first time, so it will create an alias
+            params_insert = {
+                "movie_id": new_movie_id,
+                "title": title,
+                "director": director,
+                "year": year,
+                "rating": rating,
+                "poster": poster,
+                "movie_link": movie_link,
+            }
+            self._execute_query(QUERY_INSERT_MOVIE, params_insert)
+            print('New movie added')
+        else:
+            # User already has one alias of that movie, so it will update the existing one
+            params_update = {
+                "movie_id": new_movie_id,
+                "title": title,
+                "director": director,
+                "year": year,
+                "rating": rating,
+                "poster": poster,
+                "movie_link": movie_link,
+                "user_updated_movie_id": old_movie_id,
+            }
+            self._execute_query(QUERY_UPDATE_MOVIE_BY_USER_UPDATED_ID, params_update)
+            print('Movie updated')
+
+            # Update the user_movies user_updated_movie_id with the new movie_id
+        params_update_user_movie = {
+            "new_movie_id": new_movie_id,
+            "old_movie_id": old_movie_id,
             "user_id": user_id,
         }
-
-        params_3 = {
-            "movie_id": old_movie_id,
-            "user_id": user_id,
-        }
-
-        # Add new updated movie
-        self._execute_query(QUERY_INSERT_MOVIE, params)
-
-        # Associate it with the user
-        self._execute_query(QUERY_INSERT_USER_MOVIE, params_2)
-
-        # Delete association with the old movie details
-        self._execute_query(QUERY_DELETE_USER_MOVIE, params_3)
+        self._execute_query(QUERY_UPDATE_USER_MOVIE, params_update_user_movie)
+        print('User movies updated')
         return True
 
-    def delete_movie(self, user_id, movie_id):  # CHECKED
+    def delete_movie(self, user_id, movie_id):
         """Deletes a movie with the specified movie ID from the user's movie list.
-        Deletes the movie from the database if it is not associated with any other users"""
+        Deletes the movie from the database if it's an alias"""
 
         # Check if the movie exists
         params = {"movie_id": movie_id}
@@ -229,24 +247,24 @@ class SQLiteDataManager(DataManagerInterface):
         if not user:
             raise ValueError(f"User with ID {user_id} not found")
 
-        # Check if the movie ID is associated with any other user
-        params = {"user_id": user_id,
-                  "movie_id": movie_id}
-        result = self._execute_query(QUERY_CHECK_MOVIE_ASSOCIATION, params)
-
-        # If the movie is not associated with any other user, delete it from the movies table
-        if not result:
-            params = {"user_id": user_id, "movie_id": movie_id}
-            self._execute_query(QUERY_DELETE_USER_MOVIE, params)
-
-            # Also delete the movie from the movies table
+        # Check if the movie has been updated
+        params = {
+            "user_id": user_id,
+            "movie_id": movie_id
+        }
+        user_updated_movie = self._execute_query(QUERY_CHECK_USER_MOVIE, params)
+        if len(user_updated_movie) == 0:
+            # The movie is an alias we can delete from movies and user_movies
             self._execute_query(QUERY_DELETE_MOVIE, params)
+            self._execute_query(QUERY_DELETE_USER_MOVIE, params)
+            print('deleted alias movie from movies')
             return True
 
         else:
-            # Movie is associated with other users, so only remove it from the current user's list
+            # Movie is original data, only remove it from user_movies
             params = {"user_id": user_id, "movie_id": movie_id}
             self._execute_query(QUERY_DELETE_USER_MOVIE, params)
+            print('deleted movie association with the user')
             return False
 
     def delete_user(self, user_id):
@@ -256,12 +274,12 @@ class SQLiteDataManager(DataManagerInterface):
         if not user:
             raise ValueError(f"User with ID {user_id} not found")
 
-        # Delete the user's associated movies from the user_movies table
         params = {"user_id": user_id}
-        self._execute_query(QUERY_DELETE_USER_MOVIES, params)
+        # Delete all alias movies
+        self._execute_query(QUERY_DELETE_ALIAS_ORPHAN_MOVIES, params)
 
-        # Delete all movies that are not associated with anyone else
-        self._execute_query(QUERY_DELETE_ORPHAN_MOVIES)
+        # Delete the user's associated movies from the user_movies table
+        self._execute_query(QUERY_DELETE_USER_MOVIES, params)
 
         # Delete the user from the users table
         self._execute_query(QUERY_DELETE_USER, params)
@@ -291,13 +309,18 @@ class SQLiteDataManager(DataManagerInterface):
         self._execute_query(QUERY_UPDATE_USER_PASSWORD, params)
         return True
 
-    def get_all_movie_reviews(self, movie_id):  # CHECKED
+    def get_all_movie_reviews(self, updated_movie_id):  # CHECKED
         """retrieves all the movie info and reviews for a movie with the provided ID"""
+
+        params = {"updated_movie_id": updated_movie_id}
+        movie_id_dict = self._execute_query(QUERY_FIND_ORIGINAL_MOVIE_ID, params)
+        movie_id = movie_id_dict[0]['movie_id']
+
         # Check if the movie exists
         params = {"movie_id": movie_id}
         existing_movie = self._execute_query(QUERY_CHECK_EXISTING_MOVIE, params)
         if not existing_movie:
-            raise ValueError(f"Movie not found")
+            raise ValueError(f"Movie reviews not found")
 
         params = {"movie_id": movie_id}
         movie_reviews = self._execute_query(QUERY_GET_MOVIE_REVIEWS, params)

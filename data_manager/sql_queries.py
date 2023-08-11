@@ -14,7 +14,7 @@ WHERE title = :title
 QUERY_GET_USER_MOVIES = """
 SELECT m.movie_id AS id, m.title, m.director, m.year, m.rating, m.poster, m.movie_link
 FROM movies m
-JOIN user_movies um ON m.movie_id = um.movie_id
+JOIN user_movies um ON m.movie_id = um.user_updated_movie_id
 WHERE um.user_id = :user_id
 """
 
@@ -25,7 +25,8 @@ VALUES (:movie_id, :title, :director, :year, :rating, :poster, :movie_link)
 """
 
 # Query to insert a new entry into the user_movies table to associate a movie with a user
-QUERY_INSERT_USER_MOVIE = "INSERT INTO user_movies (user_id, movie_id) VALUES (:user_id, :movie_id)"
+QUERY_INSERT_USER_MOVIE = """INSERT INTO user_movies (user_id, movie_id, user_updated_movie_id) VALUES (:user_id, 
+                          :movie_id, :movie_id)"""
 
 # Query to insert a new user into the 'users' table
 QUERY_INSERT_USER = """
@@ -37,7 +38,7 @@ VALUES (:user_id, :user_name, :password, :email)
 QUERY_DELETE_USER_MOVIE = """
 DELETE FROM user_movies
 WHERE user_id = :user_id
-  AND movie_id = :movie_id
+  AND user_updated_movie_id = :movie_id
 """
 
 # Query to delete a user from the 'users' table
@@ -84,10 +85,15 @@ QUERY_DELETE_USER_MOVIES = """
 DELETE FROM user_movies
 WHERE user_id = :user_id;"""
 
-QUERY_DELETE_ORPHAN_MOVIES = """
+QUERY_DELETE_ALIAS_ORPHAN_MOVIES = """
 DELETE FROM movies
-WHERE movie_id NOT IN (SELECT DISTINCT movie_id FROM user_movies);
+WHERE movie_id IN (
+    SELECT um.user_updated_movie_id
+    FROM user_movies um
+    WHERE um.user_id = :user_id AND um.user_updated_movie_id != um.movie_id
+);
 """
+
 
 QUERY_CHECK_EXISTING_MOVIE = """
 SELECT 1 FROM movies
@@ -183,3 +189,35 @@ WHERE
 ORDER BY
     r.review_id;
 """
+
+QUERY_UPDATE_USER_MOVIE = """
+UPDATE user_movies
+SET user_updated_movie_id = :new_movie_id
+WHERE user_id = :user_id
+AND movie_id = :old_movie_id;
+"""
+
+QUERY_FIND_ORIGINAL_MOVIE_ID = """
+SELECT movie_id
+FROM user_movies
+WHERE user_updated_movie_id = :updated_movie_id;
+"""
+
+QUERY_CHECK_USER_MOVIE = """
+SELECT 1
+FROM user_movies
+WHERE user_id = :user_id AND movie_id = :movie_id AND user_updated_movie_id = movie_id;
+"""
+
+QUERY_UPDATE_MOVIE_BY_USER_UPDATED_ID = """
+UPDATE movies
+SET title = :title,
+    director = :director,
+    year = :year,
+    rating = :rating,
+    poster = :poster,
+    movie_link = :movie_link
+WHERE movie_id = :user_updated_movie_id;
+"""
+
+

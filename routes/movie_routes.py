@@ -109,7 +109,7 @@ def update_movie(user_id, movie_id):
         return render_template('general_error.html', error_message=error_message)
 
     if request.method == 'POST':
-        updated_title = request.form['title']
+        title = movie_to_update['title']
         updated_director = request.form['director']
         updated_year = request.form['year']
         updated_rating = request.form['rating']
@@ -119,7 +119,7 @@ def update_movie(user_id, movie_id):
         # CREATE A NEW MOVIE ID
         new_movie_id = id_generator()
         try:
-            data_manager.update_movie(user_id, movie_id, new_movie_id, updated_title, updated_rating,
+            data_manager.update_movie(user_id, movie_id, new_movie_id, title, updated_rating,
                                       updated_year, updated_poster_link, updated_director, updated_imdb_link)
 
             return redirect(url_for('movie_bp.user_movies', user_id=user_id))
