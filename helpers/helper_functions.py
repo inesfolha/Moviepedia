@@ -1,9 +1,17 @@
 import uuid
 from flask_bcrypt import Bcrypt
 import datetime
+import secrets
+import string
 
 # Initialize the bcrypt instance
 bcrypt = Bcrypt()
+
+
+def generate_secure_password(length=12):
+    characters = string.ascii_letters + string.digits + string.punctuation
+    password = ''.join(secrets.choice(characters) for _ in range(length))
+    return password
 
 
 def id_generator():

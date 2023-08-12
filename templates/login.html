@@ -18,8 +18,11 @@
             <label for="username">Username:</label>
             <input type="text" name="username" id="username" value="{% if request.args.get('username') %}{{ request.args.get('username') }}{% endif %}" required><br>
             <label for="password">Password:</label>
-            <input type="password" name="password" id="password" required><button type="submit">Login</button> <br>
+            <input type="password" name="password" id="password" required><button type="submit">Login</button>  <br>
         </form>
+        <div class="container">
+        <a href="{{ url_for('email_bp.forgot_password') }}"> Forgot password?</a>
+        </div>
         <br>{{error_message}}
     </div>
 </div>

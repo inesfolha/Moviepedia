@@ -116,8 +116,8 @@ WHERE user_id = :user_id AND movie_id = :movie_id
 """
 
 QUERY_ADD_REVIEW = """
-INSERT INTO reviews (review_id, user_id, movie_id, rating, review_text, likes, publication_date)
-VALUES (:review_id, :user_id, :movie_id, :rating, :review_text, :likes_count, :publication_date);
+INSERT INTO reviews (review_id, user_id, movie_id, rating, review_title, review_text, likes, publication_date)
+VALUES (:review_id, :user_id, :movie_id, :rating, :review_title, :review_text, :likes_count, :publication_date);
 
 """
 
@@ -220,4 +220,8 @@ SET title = :title,
 WHERE movie_id = :user_updated_movie_id;
 """
 
-
+QUERY_GET_USER_BY_EMAIL = """
+SELECT *
+FROM users
+WHERE email = :email;
+"""

@@ -12,6 +12,7 @@ from movie_web_app.routes.review_routes import review_bp
 from movie_web_app.routes.api_movie_routes import api_movies
 from movie_web_app.routes.api_user_routes import api_user
 from movie_web_app.routes.api_review_routes import api_reviews
+from movie_web_app.routes.email_routes import email_bp
 from helpers.helper_functions import bcrypt
 from movie_web_app.data_manager.sqlite_data_manager import SQLiteDataManager
 
@@ -33,6 +34,7 @@ app.register_blueprint(review_bp)
 app.register_blueprint(api_movies, url_prefix='/api')
 app.register_blueprint(api_user, url_prefix='/api')
 app.register_blueprint(api_reviews, url_prefix='/api')
+app.register_blueprint(email_bp)
 
 
 @login_manager.user_loader

@@ -35,6 +35,7 @@ from .sql_queries import (
     QUERY_FIND_ORIGINAL_MOVIE_ID,
     QUERY_CHECK_USER_MOVIE,
     QUERY_UPDATE_MOVIE_BY_USER_UPDATED_ID,
+    QUERY_GET_USER_BY_EMAIL,
 )
 
 
@@ -488,6 +489,15 @@ class SQLiteDataManager(DataManagerInterface):
             review_likes[review_id].append(liked_user_id)
 
         return review_likes
+
+    def check_email_address(self, email):
+        # Check if email inserted is in database, users
+        params = {"email": email}
+        user_data = self._execute_query(QUERY_GET_USER_BY_EMAIL, params)
+        if user_data:
+            return user_data
+        else:
+            raise ValueError("Email not found in the database.")
 
     def close_connection(self):
         """
