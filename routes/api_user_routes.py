@@ -11,7 +11,7 @@ from movie_web_app.static.api_menu import api_menu
 
 load_dotenv()
 
-# Create the user_bp Blueprint
+
 api_user = Blueprint('api_user', __name__)
 
 DATABASE_FILE = os.getenv('DATABASE_FILE')

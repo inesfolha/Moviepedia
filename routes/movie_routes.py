@@ -7,7 +7,6 @@ from movie_web_app.data_manager.sqlite_data_manager import SQLiteDataManager
 from movie_web_app.helpers.omdb_api_extractor import data_extractor, get_imdb_link
 from movie_web_app.helpers.helper_functions import id_generator
 
-# Create the user_bp Blueprint
 movie_bp = Blueprint('movie_bp', __name__)
 
 DATABASE_FILE = os.getenv('DATABASE_FILE')

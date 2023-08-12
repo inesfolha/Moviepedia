@@ -10,7 +10,7 @@ from movie_web_app.helpers.helper_functions import id_generator, save_date
 
 load_dotenv()
 
-# Create the user_bp Blueprint
+
 review_bp = Blueprint('review_bp', __name__)
 
 DATABASE_FILE = os.getenv('DATABASE_FILE')
