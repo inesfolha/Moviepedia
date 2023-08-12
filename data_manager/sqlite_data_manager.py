@@ -12,7 +12,6 @@ from .sql_queries import (
     QUERY_DELETE_USER,
     QUERY_UPDATE_USER_PASSWORD,
     QUERY_GET_MOVIE_BY_TITLE,
-    QUERY_CHECK_MOVIE_ASSOCIATION,
     QUERY_DELETE_MOVIE,
     QUERY_CHECK_EXISTING_USER,
     QUERY_DELETE_USER_MOVIES,
@@ -116,6 +115,8 @@ class SQLiteDataManager(DataManagerInterface):
             params = {"user_id": user_id}
             movies = self._execute_query(QUERY_GET_USER_MOVIES, params)
             return movies
+        else:
+            raise TypeError(f"Error finding the movies list for user id {user_id}")
 
     def _get_movie_by_title(self, title):  # CHECKED
         """
@@ -469,6 +470,13 @@ class SQLiteDataManager(DataManagerInterface):
 
     def movie_review_likes(self, movie_id):
         """retrieves a list of users who have liked reviews for a given movie_id"""
+
+        # Check if the movie exists
+        params = {"movie_id": movie_id}
+        existing_movie = self._execute_query(QUERY_CHECK_EXISTING_MOVIE, params)
+        if not existing_movie:
+            raise ValueError(f"Movie with not found")
+
         params = {'movie_id': movie_id}
         likes = self._execute_query(QUERY_GET_REVIEW_LIKES, params)
         review_likes = {}

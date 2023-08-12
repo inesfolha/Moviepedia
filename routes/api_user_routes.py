@@ -87,7 +87,8 @@ def change_password(user_id):
         else:
             error_message = "Password Incorrect, please try again"
             return jsonify(error_message)
-
+    except ValueError as ve:
+        return jsonify(str(ve))
     except TypeError as te:
         print(f"Error: {str(te)}")
         return jsonify(str(te))

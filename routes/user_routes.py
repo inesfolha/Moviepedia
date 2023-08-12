@@ -117,6 +117,8 @@ def change_password(user_id):
                 error_message = "Password Incorrect, please try again"
                 return render_template('change_password.html', error_message=error_message)
 
+        except ValueError as ve:
+            return render_template('general_error.html', error_message=str(ve))
         except TypeError as te:
             print(f"Error: {str(te)}")
             return render_template('general_error.html', error_message="Error retrieving user data")
