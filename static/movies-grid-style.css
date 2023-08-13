@@ -161,3 +161,37 @@ background-color:  #34344c;
     width: 40px;
     height: 40px;
   }
+
+.flash-messages {text-align:center; }
+
+.gif-container {
+border-radius: 5px;
+max-width: 30%;
+margin: 10px;
+height: auto;
+position: relative;
+color: #1f1f2e;
+font-weight:bold;
+}
+.gif-button {
+        background: none;
+        border: none;
+        padding: 0;
+        cursor: pointer;
+    }
+
+    .gif-button img {
+        max-width: 40%;
+        height: auto;
+        cursor: pointer;
+    }
+
+
+    .message {
+        text-align: center;
+        font-size: 14px;
+        margin-top: 10px;
+        color: white;
+        font-family: "Lucida Console", "Courier New", monospace;
+
+    }

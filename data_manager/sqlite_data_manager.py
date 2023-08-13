@@ -36,6 +36,7 @@ from .sql_queries import (
     QUERY_CHECK_USER_MOVIE,
     QUERY_UPDATE_MOVIE_BY_USER_UPDATED_ID,
     QUERY_GET_USER_BY_EMAIL,
+    QUERY_GET_ALL_USER_DATA,
 )
 
 
@@ -498,6 +499,14 @@ class SQLiteDataManager(DataManagerInterface):
             return user_data
         else:
             raise ValueError("Email not found in the database.")
+
+    def get_user_emails(self, user_id):
+        params = {"user_id": user_id}
+        user_data = self._execute_query(QUERY_GET_ALL_USER_DATA, params)
+        if user_data:
+            return user_data
+        else:
+            raise ValueError("User not found")
 
     def close_connection(self):
         """

@@ -225,3 +225,10 @@ SELECT *
 FROM users
 WHERE email = :email;
 """
+
+
+QUERY_GET_ALL_USER_DATA = """
+SELECT username, ID, email
+from users 
+WHERE ID = :user_id
+"""
