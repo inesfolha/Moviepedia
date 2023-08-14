@@ -8,6 +8,7 @@ from movie_web_app.helpers.authentication_helpers import is_valid_password
 from movie_web_app.helpers.helper_functions import bcrypt
 from movie_web_app.helpers.helper_functions import id_generator
 from movie_web_app.static.api_menu import api_menu
+from .email_routes import welcome_email
 
 load_dotenv()
 
@@ -42,6 +43,7 @@ def add_user():
 
                 # Call the add_user method and check if the user was added successfully
                 if data_manager.add_user(user_name, encrypted_password, user_id, email):
+                    welcome_email(user_id)
                     return jsonify('user added successfully')
                 else:
                     error_message = "Username already exists. Please choose a different username."

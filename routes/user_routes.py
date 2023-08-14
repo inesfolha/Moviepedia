@@ -10,6 +10,7 @@ from movie_web_app.data_manager.sqlite_data_manager import SQLiteDataManager
 from movie_web_app.data_manager.user import User
 from movie_web_app.helpers.authentication_helpers import is_valid_password
 from movie_web_app.helpers.helper_functions import id_generator
+from .email_routes import welcome_email
 
 load_dotenv()
 
@@ -64,6 +65,8 @@ def add_user():
 
                 # Call the add_user method and check if the user was added successfully
                 if data_manager.add_user(user_name, encrypted_password, user_id, email):
+                    welcome_email(user_id)
+                    print('email sent')
                     return redirect(url_for('user_bp.login', username=user_name))
                 else:
                     error_message = "Username already exists. Please choose a different username."

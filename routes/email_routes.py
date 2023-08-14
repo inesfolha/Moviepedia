@@ -6,7 +6,7 @@ import requests
 from movie_web_app.data_manager.sqlite_data_manager import SQLiteDataManager
 from movie_web_app.helpers.helper_functions import generate_secure_password
 from movie_web_app.helpers.helper_functions import bcrypt
-from movie_web_app.helpers.chat_gpt_interface import ai_interface, ai_prompt
+from movie_web_app.helpers.chat_gpt_interface import ai_interface, ai_prompt, ai_welcome
 
 load_dotenv()
 
@@ -31,14 +31,23 @@ def send_notification(subject, recipient, message_body):
     return response.json()
 
 
-@email_bp.route('/welcome_email')
-def welcome_email():
-    pass
-    # response = send_notification(subject, recipient, message_body)
-    #return f"Notification sent! Response: {response}"
+def welcome_email(user_id):
+    user = data_manager.get_user_emails(user_id)[0]
+    print(user)
+    user_name = user['username']
+    user_email = user['email']
+
+    welcome_message = ai_interface(ai_welcome(user_name))
+    subject = "Welcome to Moviepedia"
+    recipient = user_email
+    message_body = welcome_message
+
+    response = send_notification(subject, recipient, message_body)
+    print(f"Notification sent! Response: {response}")
 
 
-@email_bp.route('/forgot_password',  methods=['GET', 'POST'])
+
+@email_bp.route('/forgot_password', methods=['GET', 'POST'])
 def forgot_password():
     """ Updates the user password with a random generated code and sends
     "an email notification to the user with the code to reset his password"""
@@ -90,7 +99,7 @@ def forgot_password():
         return render_template('general_error.html', error_message=error_message)
 
 
-@email_bp.route('/ai_recommends/<user_id>',  methods=['GET', 'POST'])
+@email_bp.route('/ai_recommends/<user_id>', methods=['GET', 'POST'])
 def ai_recommendations(user_id):
     if request.method == 'POST':
         user = data_manager.get_user_emails(user_id)[0]
@@ -114,7 +123,3 @@ def ai_recommendations(user_id):
 
         flash('Email sent! Check the spam!!', 'success')
         return redirect(url_for('movie_bp.user_movies', user_id=user_id))
-
-
-
-

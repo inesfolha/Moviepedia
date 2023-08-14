@@ -33,6 +33,7 @@ body::after {
   border-radius: 5px;
 }
 
+
 .list-movies-title {
   font-family: "Custom";
   padding: 0px 0;
@@ -41,7 +42,7 @@ body::after {
   text-align: center;
   font-size: 25pt;
   border-radius: 7px;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
 }
 
 .movie-grid {
@@ -165,33 +166,55 @@ background-color:  #34344c;
 .flash-messages {text-align:center; }
 
 .gif-container {
-border-radius: 5px;
-max-width: 30%;
-margin: 10px;
-height: auto;
-position: relative;
-color: #1f1f2e;
-font-weight:bold;
-}
+    border-radius: 5px;
+    max-width: 17%;
+    margin: -150px 15px 10px; /* Adjust the margin values as needed */
+    height: auto;
+    position: absolute;
+    color: #1f1f2e;
+    font-weight:bold;
+    margin-left: 30px;
+
+
 .gif-button {
         background: none;
         border: none;
         padding: 0;
         cursor: pointer;
-    }
+        border-radius: 15px;
+
+        transition: background-color 0.3s; /* Add a transition effect */
+        padding: 5px;
+
+}
+
+.gif-button:hover {
+background-color: #34344c; /* Change background color on hover */
+}
 
     .gif-button img {
-        max-width: 40%;
+        max-width: 85%;
         height: auto;
         cursor: pointer;
+        display: flex;
+        float: left;
+        position: absolute;
+        margin-top: 10px;
+
+        margin-left: -60px;
+
     }
 
 
     .message {
         text-align: center;
         font-size: 14px;
-        margin-top: 10px;
+        margin-top: 20px;
+        margin-left: 30px;
         color: white;
         font-family: "Lucida Console", "Courier New", monospace;
+        max-height: 30%;
+        display:flex;
+        float: right
 
     }
