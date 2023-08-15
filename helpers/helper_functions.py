@@ -23,3 +23,18 @@ def save_date():
     current_datetime = datetime.datetime.now()
     formatted_date = current_datetime.strftime("%d-%m-%Y")
     return formatted_date
+
+
+def sort_movies(movies, sort_by):
+    if sort_by == 'rating':
+        movies.sort(key=lambda x: x['rating'], reverse=True)  # Sort by rating in descending order
+    elif sort_by == 'year':
+        movies.sort(key=lambda x: x['year'])
+    elif sort_by == 'title':
+        movies.sort(key=lambda x: x['title'])
+    elif sort_by == 'director':
+        movies.sort(key=lambda x: x['director'])
+    else:
+        return movies
+
+    return movies

@@ -3,7 +3,7 @@ import os
 from flask import Blueprint, jsonify, request
 
 from movie_web_app.data_manager.sqlite_data_manager import SQLiteDataManager
-from movie_web_app.helpers.helper_functions import id_generator
+from movie_web_app.helpers.helper_functions import id_generator, sort_movies
 from movie_web_app.helpers.omdb_api_extractor import data_extractor, get_imdb_link
 
 api_movies = Blueprint('api_movies', __name__)
@@ -32,8 +32,10 @@ def get_users():
 def user_movies(user_id):
     """Retrieves a specific user's movies in json format"""
     try:
+
         user_name = data_manager.get_user_name(user_id)
         movies = data_manager.get_user_movies(user_id)
+
         return jsonify(user_name, movies)
     except TypeError as te:
         return jsonify(str(te))

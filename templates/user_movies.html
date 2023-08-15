@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='movies-grid-style.css') }}">
 </head>
 <body>
+
     <div class="list-movies-title">
         <h1>{{ user_name }}'s Moviepedia</h1>
         <a href="{{ url_for('user_bp.manage_account', user_id=user_id) }}" class="icon-link">
@@ -21,6 +22,22 @@
         </div>
     </div>
 
+    <div class="sorting-container">
+    <div class="sorting-form">
+        <form action="{{ url_for('movie_bp.user_movies', user_id=user_id) }}" method="get">
+            <label for="sort">Sort by:</label>
+            <select name="sort" id="sort" onchange="this.form.submit()" class="custom-dropdown">
+                <option disabled selected value="">Select an option</option>
+                <option value="date_added"> Date Added </option>
+                <option value="director"> Director </option>
+                <option value="rating">Rating</option>
+                <option value="year">Year</option>
+                <option value="title">Title</option>
+            </select>
+        </form>
+    </div>
+</div>
+
         <div class="flash-messages">
     {% with messages = get_flashed_messages() %}
         {% if messages %}
@@ -30,6 +47,7 @@
         {% endif %}
     {% endwith %}
     </div>
+
     <div>
         <ol class="movie-grid">
             {% for movie in movies %}

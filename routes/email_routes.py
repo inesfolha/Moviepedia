@@ -33,7 +33,6 @@ def send_notification(subject, recipient, message_body):
 
 def welcome_email(user_id):
     user = data_manager.get_user_emails(user_id)[0]
-    print(user)
     user_name = user['username']
     user_email = user['email']
 

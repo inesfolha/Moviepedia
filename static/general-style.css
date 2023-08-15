@@ -95,3 +95,14 @@ body::after {
     text-align: center;
     font-size: 18px;
  }
+.popcorn-image{
+display: flex;
+  justify-content: center;
+  align-items: center;}
+
+.popcorn-image img {
+   max-width: 70%;
+   opacity: 0.5;
+
+}
+

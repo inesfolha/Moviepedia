@@ -33,6 +33,32 @@ body::after {
   border-radius: 5px;
 }
 
+.sorting-container {
+        display: flex;
+        position:absolute
+        justify-content: flex-end;
+        margin-bottom: 10px;
+        margin-left: 1135px;
+        margin-right: 5px;
+}
+
+.sorting-form {
+        display: flex;
+        align-items: center;
+}
+
+.custom-dropdown {
+  border-radius: 5px;
+  background-color: #b3b3cc;
+  color: white;
+}
+
+.custom-dropdown option {
+  border-radius: 5px;
+  background-color: #b3b3cc;
+  color: white;
+}
+
 
 .list-movies-title {
   font-family: "Custom";
@@ -192,7 +218,7 @@ background-color:  #34344c;
 background-color: #34344c; /* Change background color on hover */
 }
 
-    .gif-button img {
+.gif-button img {
         max-width: 85%;
         height: auto;
         cursor: pointer;
@@ -200,13 +226,12 @@ background-color: #34344c; /* Change background color on hover */
         float: left;
         position: absolute;
         margin-top: 10px;
-
         margin-left: -60px;
 
     }
 
 
-    .message {
+.message {
         text-align: center;
         font-size: 14px;
         margin-top: 20px;
@@ -215,6 +240,6 @@ background-color: #34344c; /* Change background color on hover */
         font-family: "Lucida Console", "Courier New", monospace;
         max-height: 30%;
         display:flex;
-        float: right
-
+        float: right;
     }
+

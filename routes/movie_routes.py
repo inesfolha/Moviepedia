@@ -5,7 +5,7 @@ from flask_login import LoginManager, login_required
 
 from movie_web_app.data_manager.sqlite_data_manager import SQLiteDataManager
 from movie_web_app.helpers.omdb_api_extractor import data_extractor, get_imdb_link
-from movie_web_app.helpers.helper_functions import id_generator
+from movie_web_app.helpers.helper_functions import id_generator, sort_movies
 
 movie_bp = Blueprint('movie_bp', __name__)
 
@@ -22,6 +22,12 @@ def user_movies(user_id):
     try:
         user_name = data_manager.get_user_name(user_id)
         movies = data_manager.get_user_movies(user_id)
+        print(movies)
+        sort_by = request.args.get('sort')
+
+        if sort_by:
+            movies = sort_movies(movies, sort_by)
+            print('sorted', movies)
         return render_template('user_movies.html', movies=movies, user_name=user_name, user_id=user_id)
     except TypeError as te:
         print(f"Error: {str(te)}")
