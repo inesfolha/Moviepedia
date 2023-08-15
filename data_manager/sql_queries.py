@@ -81,6 +81,12 @@ WHERE username = :username
 LIMIT 1;
 """
 
+QUERY_CHECK_EXISTING_EMAIL = """
+SELECT 1 FROM users
+WHERE email = :email
+LIMIT 1;
+"""
+
 QUERY_DELETE_USER_MOVIES = """
 DELETE FROM user_movies
 WHERE user_id = :user_id;"""

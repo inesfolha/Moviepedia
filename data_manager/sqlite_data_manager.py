@@ -37,6 +37,7 @@ from .sql_queries import (
     QUERY_UPDATE_MOVIE_BY_USER_UPDATED_ID,
     QUERY_GET_USER_BY_EMAIL,
     QUERY_GET_ALL_USER_DATA,
+    QUERY_CHECK_EXISTING_EMAIL,
 )
 
 
@@ -162,9 +163,14 @@ class SQLiteDataManager(DataManagerInterface):
         # Check if the provided username is already in use
         params = {"username": user_name}
         existing_user = self._execute_query(QUERY_CHECK_EXISTING_USER, params)
-
         if existing_user:
-            return False  # User already exists
+            return False
+
+        params = {"email": email}
+        existing_email = self._execute_query(QUERY_CHECK_EXISTING_EMAIL, params)
+
+        if existing_email:
+            raise ValueError('This email address is already registered, please login your account')
 
         params = {
             "user_id": user_id,
@@ -365,6 +371,7 @@ class SQLiteDataManager(DataManagerInterface):
         return True
 
     def edit_reviews(self, review_id, user_id, movie_id, rating, review_text, review_title, edit_date):  # CHECKED
+        """Allows a user to edit his movie review"""
         # Check if the movie exists
         params = {"movie_id": movie_id}
         existing_movie = self._execute_query(QUERY_CHECK_EXISTING_MOVIE, params)
@@ -388,6 +395,7 @@ class SQLiteDataManager(DataManagerInterface):
         return True
 
     def delete_reviews(self, user_id, movie_id, review_id):  # CHECKED
+        """deletes a review"""
         # Check if the movie exists
         params = {"movie_id": movie_id}
         existing_movie = self._execute_query(QUERY_CHECK_EXISTING_MOVIE, params)
@@ -410,6 +418,7 @@ class SQLiteDataManager(DataManagerInterface):
         return True
 
     def like_review(self, user_id, review_id):
+        """likes a movie review"""
         # Check if the user exists
         user = self.get_user_name(user_id)
         if not user:
@@ -434,6 +443,7 @@ class SQLiteDataManager(DataManagerInterface):
         return True
 
     def unlike_review(self, user_id, review_id):
+        """unlikes a movie review"""
         # Check if the user exists
         user = self.get_user_name(user_id)
         if not user:
@@ -492,6 +502,7 @@ class SQLiteDataManager(DataManagerInterface):
         return review_likes
 
     def check_email_address(self, email):
+        """checks if a user email exists in the database and if it does, retrieves that user's info"""
         # Check if email inserted is in database, users
         params = {"email": email}
         user_data = self._execute_query(QUERY_GET_USER_BY_EMAIL, params)
@@ -501,6 +512,7 @@ class SQLiteDataManager(DataManagerInterface):
             raise ValueError("Email not found in the database.")
 
     def get_user_emails(self, user_id):
+        """gets a specific user information with the email address"""
         params = {"user_id": user_id}
         user_data = self._execute_query(QUERY_GET_ALL_USER_DATA, params)
         if user_data:

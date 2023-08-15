@@ -76,6 +76,8 @@ def add_user():
                                 "one uppercase letter, one number and one special character."
                 return render_template('add_user.html', error_message=error_message)
 
+        except ValueError as e:
+            return render_template('add_user.html', error_message=str(e))
         except IOError as e:
             error_message = "An error occurred while adding a new user."
             print(f"IOError: {str(e)}")
