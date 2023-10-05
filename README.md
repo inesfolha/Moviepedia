@@ -20,9 +20,10 @@ This README provides an overview of the project's structure, features, and insta
   - [Prerequisites](#prerequisites)
   - [Installation Steps](#installation-steps)
 - [How does it work?](#how-does-it-work)
-  - [Watch demo](link)
+  - [Watch demo](https://www.youtube.com/watch?v=kAIS983QBS8)
 - [Limitations](#limitations)
 - [Contributions](#contributions)
+- [Contact Information](#contact-information)
 
 [Back to the Top](#top)
 
@@ -162,7 +163,7 @@ The application will be accessible at http://localhost:5000 by default.
 ## How does it work?
 For a visual demonstration of how MoviePedia works, you can watch a demo here:
 
- * [Watch Demo](link)
+ * [Watch Demo](https://www.youtube.com/watch?v=kAIS983QBS8)
 
 
 ## Limitations
@@ -170,6 +171,9 @@ For a visual demonstration of how MoviePedia works, you can watch a demo here:
 
 
 - Features that require requests to the email API and chat GPT still require further optimization as they are currently a bit slow. 
+
+
+- Since emails are sent with a free API, usually emails end up in the spam box. 
 
 [Back to the Top](#top)
 
@@ -179,5 +183,10 @@ For a visual demonstration of how MoviePedia works, you can watch a demo here:
 Contributions to this project are welcome. If you'd like to contribute, please fork the repository, make your changes, and create a pull request.
 
 Thank you for exploring MoviePedia! We hope you enjoy using it as much as we enjoyed creating it.
+
+[Back to the Top](#top)
+
+## Contact Information
+For inquiries or support, please contact `moviepedia.app@gmail.com`.
 
 [Back to the Top](#top)
