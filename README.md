@@ -79,7 +79,7 @@ MoviePedia offers a range of features, including:
 - AI integration to receive personalized movie recommendations via email.
 - Welcome email and password recovery functionality.
 - Future friend list feature planned for implementation.
-
+- Security, MoviePedia prioritizes user data security. We employ bcrypt encryption to securely hash all user passwords before storing them in our database, ensuring that passwords are never stored in plaintext.
 
 [Back to the Top](#top)
 
