@@ -15,8 +15,8 @@
         <div class="gif-container">
             <form action="{{url_for('email_bp.ai_recommendations', user_id=user_id)}}" method="post" onsubmit="return confirm('By clicking ok you will receive an email from us with movie recommendations')">
                 <button type="submit" name="submit" class="gif-button">
-                    <img src="https://thumbs.gfycat.com/EarnestRealDiamondbackrattlesnake-size_restricted.gif" alt="GIF Button">
-                    <p class="message"> Not sure what to watch next? <br> Have our OWL send you some personalized ideas! </p>
+                    <img src="{{ url_for('static', filename='duck.gif') }}" alt="GIF Button">
+                    <p class="message"> Not sure what to watch next? <br> Have our Duck send you some personalized ideas! </p>
                 </button>
             </form>
         </div>

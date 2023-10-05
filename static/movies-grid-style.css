@@ -219,7 +219,7 @@ background-color: #34344c; /* Change background color on hover */
 }
 
 .gif-button img {
-        max-width: 85%;
+        max-width: 55%;
         height: auto;
         cursor: pointer;
         display: flex;

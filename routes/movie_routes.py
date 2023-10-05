@@ -22,12 +22,12 @@ def user_movies(user_id):
     try:
         user_name = data_manager.get_user_name(user_id)
         movies = data_manager.get_user_movies(user_id)
-        print(movies)
+
         sort_by = request.args.get('sort')
 
         if sort_by:
             movies = sort_movies(movies, sort_by)
-            print('sorted', movies)
+
         return render_template('user_movies.html', movies=movies, user_name=user_name, user_id=user_id)
     except TypeError as te:
         print(f"Error: {str(te)}")
